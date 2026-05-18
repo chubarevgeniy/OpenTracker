@@ -3,6 +3,21 @@ import type { FoodItem } from '../store'
 
 const BASE_URL = 'https://world.openfoodfacts.org'
 
+// Helper for retries
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetchWithRetry = async (url: string, options: any, retries = 3): Promise<any> => {
+  try {
+    return await axios.get(url, options)
+  } catch (error) {
+    if (retries > 0) {
+      console.warn(`API call failed. Retrying... (${retries} retries left)`, error)
+      return fetchWithRetry(url, options, retries - 1)
+    }
+    console.error('API call failed permanently after retries:', error)
+    throw error
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapProductToFoodItem = (product: any): FoodItem | null => {
   if (!product || !product.nutriments) return null
@@ -27,7 +42,7 @@ const mapProductToFoodItem = (product: any): FoodItem | null => {
 
 export const searchProducts = async (query: string): Promise<FoodItem[]> => {
   try {
-    const response = await axios.get(`${BASE_URL}/cgi/search.pl`, {
+    const response = await fetchWithRetry(`${BASE_URL}/cgi/search.pl`, {
       params: {
         search_terms: query,
         search_simple: 1,
@@ -39,7 +54,6 @@ export const searchProducts = async (query: string): Promise<FoodItem[]> => {
     })
 
     if (response.data && response.data.products) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return response.data.products.map(mapProductToFoodItem).filter(Boolean) as FoodItem[]
     }
     return []
@@ -51,7 +65,7 @@ export const searchProducts = async (query: string): Promise<FoodItem[]> => {
 
 export const getProductByBarcode = async (barcode: string): Promise<FoodItem | null> => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/v0/product/${barcode}.json`, {
+    const response = await fetchWithRetry(`${BASE_URL}/api/v0/product/${barcode}.json`, {
       params: {
         fields: 'id,code,product_name,brands,nutriments,image_url'
       }

@@ -22,6 +22,13 @@ const storage = {
 export type Gender = 'male' | 'female'
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
 
+export interface WeightGoal {
+  targetWeight: number
+  initialWeight: number
+  startDate: string // YYYY-MM-DD
+  targetDate: string // YYYY-MM-DD
+}
+
 export interface Settings {
   gender: Gender
   age: number
@@ -33,6 +40,7 @@ export interface Settings {
   targetProtein: number // grams
   targetCarbs: number // grams
   targetFat: number // grams
+  weightGoal?: WeightGoal
 }
 
 export interface FoodItem {
@@ -86,6 +94,7 @@ interface AppState {
   removeMealEntry: (date: string, mealType: MealType, entryId: string) => void
   logWeight: (date: string, weight: number) => void
   addSearchHistory: (foodItem: FoodItem) => void
+  resetData: () => void
 }
 
 const defaultSettings: Settings = {
@@ -187,6 +196,8 @@ export const useAppStore = create<AppState>()(
             },
           }
         }),
+
+      resetData: () => set(() => ({ dailyLogs: {}, searchHistory: {} })),
     }),
     {
       name: 'calorie-tracker-storage',

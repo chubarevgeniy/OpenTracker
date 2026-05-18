@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react'
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { format, subDays, differenceInDays } from 'date-fns'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { format, subDays, differenceInDays, startOfWeek, startOfMonth } from 'date-fns'
 import { useAppStore } from '../store'
+
+type TimeRange = 7 | 30 | 90 | 180 | 365 | 'all' | 'goal'
 
 export default function Stats() {
   const dailyLogs = useAppStore((state) => state.dailyLogs)
   const logWeight = useAppStore((state) => state.logWeight)
-  const settingsWeight = useAppStore((state) => state.settings.weight)
+  const settings = useAppStore((state) => state.settings)
+  const settingsWeight = settings.weight
 
   const [currentWeightInput, setCurrentWeightInput] = useState(settingsWeight.toString())
-  const [timeRange, setTimeRange] = useState<7 | 30>(30)
+  const [timeRange, setTimeRange] = useState<TimeRange>(30)
 
   const handleLogWeight = () => {
     const w = parseFloat(currentWeightInput)
@@ -23,8 +26,21 @@ export default function Stats() {
     const data = []
     const today = new Date()
 
+    let daysToCalculate = 30
+    if (typeof timeRange === 'number') {
+      daysToCalculate = timeRange
+    } else if (timeRange === 'all') {
+      const allDates = Object.keys(dailyLogs).sort()
+      if (allDates.length > 0) {
+        daysToCalculate = differenceInDays(today, new Date(allDates[0])) + 1
+      }
+    } else if (timeRange === 'goal' && settings.weightGoal) {
+      daysToCalculate = differenceInDays(today, new Date(settings.weightGoal.startDate)) + 1
+      if (daysToCalculate < 1) daysToCalculate = 1
+    }
+
     // Fill data for the last N days to ensure continuity
-    for (let i = timeRange - 1; i >= 0; i--) {
+    for (let i = daysToCalculate - 1; i >= 0; i--) {
       const date = subDays(today, i)
       const dateStr = format(date, 'yyyy-MM-dd')
       const log = dailyLogs[dateStr]
@@ -39,15 +55,29 @@ export default function Stats() {
       }
 
       data.push({
+        dateObj: date,
         date: format(date, 'MMM dd'),
         fullDate: dateStr,
         calories: Math.round(calories),
-        weight: log?.weight || null, // Leave null if not logged to break line or connect
+        weight: log?.weight || null,
+        goalWeight: settings.weightGoal ? settings.weightGoal.targetWeight : null,
       })
     }
 
     // Interpolate missing weights for better visualization
     let lastKnownWeight = settingsWeight
+
+    // Attempt to find an initial weight for interpolation if the first point is null
+    if (data.length > 0 && data[0].weight === null) {
+      const sortedDates = Object.keys(dailyLogs).sort().reverse()
+      for (const d of sortedDates) {
+        if (d < data[0].fullDate && dailyLogs[d].weight) {
+          lastKnownWeight = dailyLogs[d].weight
+          break
+        }
+      }
+    }
+
     for (const point of data) {
       if (point.weight !== null) {
         lastKnownWeight = point.weight
@@ -56,8 +86,79 @@ export default function Stats() {
       }
     }
 
+    // Aggregation logic
+    if (daysToCalculate > 60 && daysToCalculate <= 180) {
+      // Weekly average
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const weeklyData: Record<string, any> = {}
+      data.forEach(point => {
+        const weekStart = format(startOfWeek(point.dateObj), 'yyyy-MM-dd')
+        if (!weeklyData[weekStart]) {
+          weeklyData[weekStart] = {
+            date: format(startOfWeek(point.dateObj), 'MMM dd'),
+            fullDate: weekStart,
+            totalCalories: 0,
+            calCount: 0,
+            weightSum: 0,
+            weightCount: 0,
+            goalWeight: point.goalWeight
+          }
+        }
+        if (point.calories > 0) {
+          weeklyData[weekStart].totalCalories += point.calories
+          weeklyData[weekStart].calCount += 1
+        }
+        if (point.weight !== null) {
+          weeklyData[weekStart].weightSum += point.weight
+          weeklyData[weekStart].weightCount += 1
+        }
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return Object.values(weeklyData).map((w: any) => ({
+        date: w.date,
+        fullDate: w.fullDate,
+        calories: w.calCount > 0 ? Math.round(w.totalCalories / w.calCount) : 0,
+        weight: w.weightCount > 0 ? Number((w.weightSum / w.weightCount).toFixed(1)) : null,
+        goalWeight: w.goalWeight
+      }))
+    } else if (daysToCalculate > 180) {
+      // Monthly average
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const monthlyData: Record<string, any> = {}
+      data.forEach(point => {
+        const monthStart = format(startOfMonth(point.dateObj), 'yyyy-MM')
+        if (!monthlyData[monthStart]) {
+          monthlyData[monthStart] = {
+            date: format(startOfMonth(point.dateObj), 'MMM yyyy'),
+            fullDate: monthStart + '-01',
+            totalCalories: 0,
+            calCount: 0,
+            weightSum: 0,
+            weightCount: 0,
+            goalWeight: point.goalWeight
+          }
+        }
+        if (point.calories > 0) {
+          monthlyData[monthStart].totalCalories += point.calories
+          monthlyData[monthStart].calCount += 1
+        }
+        if (point.weight !== null) {
+          monthlyData[monthStart].weightSum += point.weight
+          monthlyData[monthStart].weightCount += 1
+        }
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return Object.values(monthlyData).map((m: any) => ({
+        date: m.date,
+        fullDate: m.fullDate,
+        calories: m.calCount > 0 ? Math.round(m.totalCalories / m.calCount) : 0,
+        weight: m.weightCount > 0 ? Number((m.weightSum / m.weightCount).toFixed(1)) : null,
+        goalWeight: m.goalWeight
+      }))
+    }
+
     return data
-  }, [dailyLogs, timeRange, settingsWeight])
+  }, [dailyLogs, timeRange, settingsWeight, settings.weightGoal])
 
   const tdeeCalc = useMemo(() => {
     const today = new Date()
@@ -120,21 +221,26 @@ export default function Stats() {
 
   return (
     <div className="p-4 space-y-6 bg-gray-50 min-h-screen pb-24">
-      <header className="flex justify-between items-center">
+      <header className="flex flex-col gap-4">
         <h1 className="text-2xl font-bold">Statistics</h1>
-        <div className="flex bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-          <button
-            className={`px-3 py-1 text-sm ${timeRange === 7 ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600'}`}
-            onClick={() => setTimeRange(7)}
-          >
-            7D
-          </button>
-          <button
-            className={`px-3 py-1 text-sm border-l border-gray-200 ${timeRange === 30 ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600'}`}
-            onClick={() => setTimeRange(30)}
-          >
-            30D
-          </button>
+        <div className="flex flex-wrap gap-2 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 p-1">
+          {[7, 30, 90, 180, 365, 'all'].map((range) => (
+            <button
+              key={range}
+              className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === range ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+              onClick={() => setTimeRange(range as TimeRange)}
+            >
+              {typeof range === 'number' ? (range >= 30 ? (range === 365 ? '1Y' : `${range/30}M`) : `${range}D`) : 'All'}
+            </button>
+          ))}
+          {settings.weightGoal && (
+            <button
+              className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === 'goal' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+              onClick={() => setTimeRange('goal')}
+            >
+              Goal
+            </button>
+          )}
         </div>
       </header>
 
@@ -161,13 +267,14 @@ export default function Stats() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 h-72">
         <h2 className="text-lg font-semibold mb-2">Calories Consumed</h2>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
             <YAxis fontSize={12} />
             <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-            <Bar dataKey="calories" fill="#c084fc" radius={[4, 4, 0, 0]} name="Calories" />
-          </BarChart>
+            <Line type="monotone" dataKey="calories" stroke="#c084fc" strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="Calories" />
+            <ReferenceLine y={settings.targetCalories} stroke="#e5e7eb" strokeDasharray="3 3" />
+          </LineChart>
         </ResponsiveContainer>
       </div>
 
@@ -179,7 +286,10 @@ export default function Stats() {
             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
             <YAxis domain={['auto', 'auto']} fontSize={12} />
             <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-            <Line type="monotone" dataKey="weight" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} name="Weight (kg)" />
+            <Line type="monotone" dataKey="weight" stroke="#3b82f6" strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="Weight (kg)" />
+            {settings.weightGoal && (
+              <Line type="monotone" dataKey="goalWeight" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Goal (kg)" />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>

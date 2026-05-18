@@ -1,10 +1,24 @@
-import { useAppStore, type Gender, type ActivityLevel } from '../store'
+import { useState } from 'react'
+import { useAppStore, type Gender, type ActivityLevel, type WeightGoal } from '../store'
 import { exportToCSV } from '../utils/export'
-import { Download } from 'lucide-react'
+import { importFromCSV } from '../utils/import'
+import { Download, Upload, Trash2, Target } from 'lucide-react'
+import { format } from 'date-fns'
 
 export default function Settings() {
   const settings = useAppStore((state) => state.settings)
   const updateSettings = useAppStore((state) => state.updateSettings)
+  const resetData = useAppStore((state) => state.resetData)
+
+  const [showGoalForm, setShowGoalForm] = useState(false)
+  const [goalForm, setGoalForm] = useState<WeightGoal>(
+    settings.weightGoal || {
+      targetWeight: settings.weight,
+      initialWeight: settings.weight,
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      targetDate: format(new Date(new Date().setMonth(new Date().getMonth() + 3)), 'yyyy-MM-dd')
+    }
+  )
 
   const calculateTargets = (
     gender: Gender,
@@ -82,6 +96,30 @@ export default function Settings() {
         settings.activityLevel
       )
       updateSettings({ manualTargets: false, ...targets })
+    }
+  }
+
+  const handleSaveGoal = () => {
+    updateSettings({ weightGoal: goalForm })
+    setShowGoalForm(false)
+  }
+
+  const handleRemoveGoal = () => {
+    updateSettings({ weightGoal: undefined })
+    setShowGoalForm(false)
+  }
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      importFromCSV(file)
+    }
+  }
+
+  const handleReset = () => {
+    if (window.confirm('Are you sure you want to delete all local data? This cannot be undone.')) {
+      resetData()
+      alert('Data has been reset.')
     }
   }
 
@@ -212,17 +250,118 @@ export default function Settings() {
         </div>
       </div>
 
+      <div className="space-y-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Weight Goal</h2>
+          <button
+            onClick={() => setShowGoalForm(!showGoalForm)}
+            className="text-sm text-purple-600 font-medium hover:text-purple-700"
+          >
+            {showGoalForm ? 'Cancel' : settings.weightGoal ? 'Edit Goal' : 'Set Goal'}
+          </button>
+        </div>
+
+        {settings.weightGoal && !showGoalForm && (
+          <div className="bg-purple-50 border border-purple-100 p-4 rounded-xl flex items-center gap-4">
+            <div className="p-3 bg-purple-100 text-purple-600 rounded-full">
+              <Target size={24} />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900">Target: {settings.weightGoal.targetWeight} kg</p>
+              <p className="text-sm text-gray-500">
+                From {settings.weightGoal.initialWeight} kg ({settings.weightGoal.startDate}) to {settings.weightGoal.targetDate}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {showGoalForm && (
+          <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Initial Weight (kg)</label>
+                <input
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  value={goalForm.initialWeight}
+                  onChange={(e) => setGoalForm({...goalForm, initialWeight: Number(e.target.value)})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Target Weight (kg)</label>
+                <input
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  value={goalForm.targetWeight}
+                  onChange={(e) => setGoalForm({...goalForm, targetWeight: Number(e.target.value)})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                <input
+                  type="date"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  value={goalForm.startDate}
+                  onChange={(e) => setGoalForm({...goalForm, startDate: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Target Date</label>
+                <input
+                  type="date"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  value={goalForm.targetDate}
+                  onChange={(e) => setGoalForm({...goalForm, targetDate: e.target.value})}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              {settings.weightGoal && (
+                <button
+                  onClick={handleRemoveGoal}
+                  className="px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg"
+                >
+                  Remove Goal
+                </button>
+              )}
+              <button
+                onClick={handleSaveGoal}
+                className="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700"
+              >
+                Save Goal
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="space-y-4 pt-4 border-t border-gray-200 pb-10">
-        <h2 className="text-xl font-semibold">Data Export</h2>
+        <h2 className="text-xl font-semibold">Data Management</h2>
         <p className="text-sm text-gray-500">
-          Export your daily logs and weight history to a CSV file. You can easily import this file into Google Sheets.
+          Export your daily logs and weight history to a CSV file, import from an existing CSV, or reset all local data.
         </p>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={exportToCSV}
+            className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-green-50 text-green-700 font-medium rounded-xl hover:bg-green-100 transition-colors border border-green-200"
+          >
+            <Download size={20} />
+            Export
+          </button>
+
+          <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-blue-50 text-blue-700 font-medium rounded-xl hover:bg-blue-100 transition-colors border border-blue-200 cursor-pointer">
+            <Upload size={20} />
+            Import
+            <input type="file" accept=".csv" onChange={handleImport} className="hidden" />
+          </label>
+        </div>
+
         <button
-          onClick={exportToCSV}
-          className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-green-50 text-green-700 font-medium rounded-xl hover:bg-green-100 transition-colors border border-green-200"
+          onClick={handleReset}
+          className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-red-50 text-red-700 font-medium rounded-xl hover:bg-red-100 transition-colors border border-red-200 mt-4"
         >
-          <Download size={20} />
-          Export to CSV
+          <Trash2 size={20} />
+          Reset All Data
         </button>
       </div>
     </div>
