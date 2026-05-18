@@ -29,7 +29,10 @@ export interface WeightGoal {
   targetDate: string // YYYY-MM-DD
 }
 
+export type Theme = 'light' | 'dark' | 'system'
+
 export interface Settings {
+  theme: Theme
   gender: Gender
   age: number | ''
   weight: number | '' // kg
@@ -98,6 +101,7 @@ interface AppState {
 }
 
 const defaultSettings: Settings = {
+  theme: 'system',
   gender: 'male',
   age: 30,
   weight: 70,

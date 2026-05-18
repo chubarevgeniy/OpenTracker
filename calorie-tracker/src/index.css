@@ -15,3 +15,12 @@
     @apply bg-[var(--color-bg-alt)] text-[var(--color-text)] font-sans antialiased m-0 p-0;
   }
 }
+
+@layer base {
+  *:focus {
+    outline: none !important;
+  }
+  .recharts-wrapper * {
+    outline: none !important;
+  }
+}
