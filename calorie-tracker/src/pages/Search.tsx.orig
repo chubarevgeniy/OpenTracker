@@ -103,7 +103,7 @@ export default function Search() {
 
         <div className="flex gap-4 border-b">
           <button
-            className={`pb-2 text-sm font-medium ${activeTab === 'search' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100'}`}
+            className={`pb-2 text-sm font-medium ${activeTab === 'search' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400'}`}
             onClick={() => setActiveTab('search')}
           >
             Search

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useAppStore, type Gender, type ActivityLevel, type WeightGoal } from '../store'
 import { exportToCSV } from '../utils/export'
 import { importFromCSV } from '../utils/import'
-import { Download, Upload, Trash2, Target, Moon, Sun, Laptop } from 'lucide-react'
+import { Download, Upload, Trash2, Target, Moon, Sun, Laptop, Info } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 
 export default function Settings() {
@@ -207,7 +207,7 @@ const handleCalculateFromGoal = () => {
 
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
 
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Appearance</h2>
@@ -381,12 +381,67 @@ const handleCalculateFromGoal = () => {
           </div>
         )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Daily Calories (kcal)</label>
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Daily Calories (kcal)</label>
+            {settings.manualTargets && settings.weightGoal && (
+              <div className="group relative flex items-center">
+                <Info size={16} className="text-purple-500 cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-72 p-4 bg-gray-900 text-white text-xs rounded-lg shadow-xl z-10 whitespace-normal">
+                  <p className="font-semibold mb-2 text-sm border-b border-gray-700 pb-1">Target Calculation</p>
+                  <ul className="space-y-2">
+                    <li className="flex justify-between">
+                      <span className="text-gray-400">Base TDEE:</span>
+                      <span className="font-medium">{
+                        tdeeSource === 'formula'
+                          ? calculateTargets(settings.gender, settings.weight, settings.height, settings.age, settings.activityLevel).targetCalories
+                          : (calculateTDEE(useAppStore.getState().dailyLogs, 30)?.tdee || 'Unknown')
+                      } kcal</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-gray-400">Goal:</span>
+                      <span className="font-medium">Lose {
+                        goalTimeline === 'start'
+                          ? (Number(settings.weightGoal.initialWeight) - Number(settings.weightGoal.targetWeight)).toFixed(1)
+                          : (Number(settings.weight) - Number(settings.weightGoal.targetWeight)).toFixed(1)
+                      } kg</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-gray-400">Total Deficit:</span>
+                      <span className="font-medium">{
+                        Math.round((goalTimeline === 'start'
+                          ? (Number(settings.weightGoal.initialWeight) - Number(settings.weightGoal.targetWeight))
+                          : (Number(settings.weight) - Number(settings.weightGoal.targetWeight))) * 7700)
+                      } kcal</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-gray-400">Timeline:</span>
+                      <span className="font-medium">{
+                        goalTimeline === 'start'
+                          ? differenceInDays(new Date(settings.weightGoal.targetDate), new Date(settings.weightGoal.startDate))
+                          : differenceInDays(new Date(settings.weightGoal.targetDate), new Date())
+                      } days</span>
+                    </li>
+                    <li className="flex justify-between text-purple-300 pt-1 border-t border-gray-700">
+                      <span>Daily Deficit:</span>
+                      <span className="font-medium">{
+                        Math.round(((goalTimeline === 'start'
+                          ? (Number(settings.weightGoal.initialWeight) - Number(settings.weightGoal.targetWeight))
+                          : (Number(settings.weight) - Number(settings.weightGoal.targetWeight))) * 7700) / (goalTimeline === 'start'
+                            ? differenceInDays(new Date(settings.weightGoal.targetDate), new Date(settings.weightGoal.startDate))
+                            : differenceInDays(new Date(settings.weightGoal.targetDate), new Date())))
+                      } kcal/day</span>
+                    </li>
+                  </ul>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                </div>
+              </div>
+            )}
+          </div>
           <input
             type="number"
             disabled={!settings.manualTargets}
-            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 focus:border-purple-500 focus:ring-purple-500"
+            className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 focus:border-purple-500 focus:ring-purple-500"
             value={settings.targetCalories}
             onChange={(e) => handleProfileChange('targetCalories', e.target.value === '' ? '' : Number(e.target.value))}
           />
@@ -428,7 +483,7 @@ const handleCalculateFromGoal = () => {
 
       <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Weight Goal</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Weight Goal</h2>
           <button
             onClick={() => setShowGoalForm(!showGoalForm)}
             className="text-sm text-purple-600 font-medium hover:text-purple-700"
@@ -512,7 +567,7 @@ const handleCalculateFromGoal = () => {
       </div>
 
       <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700 pb-10">
-        <h2 className="text-xl font-semibold">Data Management</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Data Management</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Export your daily logs and weight history to a CSV file, import from an existing CSV, or reset all local data.
         </p>
