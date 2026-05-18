@@ -1,6 +1,7 @@
+import { useState, useMemo, useEffect } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
-import { format } from 'date-fns'
-import { Plus, Trash2 } from 'lucide-react'
+import { format, addDays, subDays, isToday } from 'date-fns'
+import { Plus, Trash2, ChevronLeft, ChevronRight, Scale } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const ProgressBar = ({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
@@ -69,14 +70,50 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry }: { title
 }
 
 export default function Dashboard() {
-  const today = format(new Date(), 'yyyy-MM-dd')
+  const [selectedDateObj, setSelectedDateObj] = useState(new Date())
+  const selectedDate = format(selectedDateObj, 'yyyy-MM-dd')
+
   const settings = useAppStore((state) => state.settings)
   const dailyLogs = useAppStore((state) => state.dailyLogs)
   const removeMealEntry = useAppStore((state) => state.removeMealEntry)
+  const logWeight = useAppStore((state) => state.logWeight)
 
-  const log = dailyLogs[today] || {
-    date: today,
+  const log = dailyLogs[selectedDate] || {
+    date: selectedDate,
     meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
+  }
+
+  // Find latest weight
+  const latestWeight = useMemo(() => {
+    if (log.weight) return log.weight
+
+    // Find the most recent weight before selectedDate
+    const sortedDates = Object.keys(dailyLogs).sort().reverse()
+    for (const date of sortedDates) {
+      if (date < selectedDate && dailyLogs[date].weight) {
+        return dailyLogs[date].weight
+      }
+    }
+
+    return settings.weight
+  }, [log.weight, dailyLogs, selectedDate, settings.weight])
+
+  const [weightInput, setWeightInput] = useState(latestWeight.toString())
+
+  useEffect(() => {
+    // Synchronize local input state with latest weight calculation changes
+    const timer = setTimeout(() => {
+      setWeightInput(latestWeight.toString())
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [latestWeight, selectedDate])
+
+  const handleWeightSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const w = parseFloat(weightInput)
+    if (!isNaN(w) && w > 0) {
+      logWeight(selectedDate, w)
+    }
   }
 
   const calculateTotals = () => {
@@ -96,12 +133,62 @@ export default function Dashboard() {
 
   const totals = calculateTotals()
 
+  const goToPreviousDay = () => setSelectedDateObj(prev => subDays(prev, 1))
+  const goToNextDay = () => setSelectedDateObj(prev => addDays(prev, 1))
+
   return (
     <div className="p-4 space-y-6 bg-gray-50 min-h-screen pb-24">
-      <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Today</h1>
-        <span className="text-gray-500 font-medium">{format(new Date(), 'MMM d, yyyy')}</span>
+      <header className="flex flex-col gap-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">
+            {isToday(selectedDateObj) ? 'Today' : format(selectedDateObj, 'MMM d, yyyy')}
+          </h1>
+          <div className="flex items-center gap-2 bg-white rounded-xl shadow-sm border border-gray-100 p-1">
+            <button onClick={goToPreviousDay} className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600">
+              <ChevronLeft size={20} />
+            </button>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedDateObj(new Date(e.target.value + 'T00:00:00'))
+                }
+              }}
+              className="bg-transparent border-none text-sm font-medium text-gray-700 focus:ring-0 cursor-pointer p-0 w-[110px]"
+            />
+            <button onClick={goToNextDay} className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-600">
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
       </header>
+
+      {/* Weight Input */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+        <div className="p-2 bg-blue-50 text-blue-600 rounded-full">
+          <Scale size={20} />
+        </div>
+        <form onSubmit={handleWeightSubmit} className="flex-1 flex gap-2">
+          <div className="flex-1 flex items-center border border-gray-200 rounded-lg px-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 bg-gray-50">
+            <input
+              type="number"
+              step="0.1"
+              value={weightInput}
+              onChange={(e) => setWeightInput(e.target.value)}
+              className="w-full bg-transparent border-none focus:ring-0 p-2 text-gray-900"
+              placeholder="Weight"
+            />
+            <span className="text-gray-500 text-sm font-medium">kg</span>
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Save
+          </button>
+        </form>
+      </div>
 
       {/* Summary Card */}
       <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
@@ -140,10 +227,10 @@ export default function Dashboard() {
 
       {/* Meals List */}
       <div className="space-y-4">
-        <MealSection title="Breakfast" mealType="breakfast" meals={log.meals.breakfast} today={today} removeMealEntry={removeMealEntry} />
-        <MealSection title="Lunch" mealType="lunch" meals={log.meals.lunch} today={today} removeMealEntry={removeMealEntry} />
-        <MealSection title="Dinner" mealType="dinner" meals={log.meals.dinner} today={today} removeMealEntry={removeMealEntry} />
-        <MealSection title="Snacks" mealType="snack" meals={log.meals.snack} today={today} removeMealEntry={removeMealEntry} />
+        <MealSection title="Breakfast" mealType="breakfast" meals={log.meals.breakfast} today={selectedDate} removeMealEntry={removeMealEntry} />
+        <MealSection title="Lunch" mealType="lunch" meals={log.meals.lunch} today={selectedDate} removeMealEntry={removeMealEntry} />
+        <MealSection title="Dinner" mealType="dinner" meals={log.meals.dinner} today={selectedDate} removeMealEntry={removeMealEntry} />
+        <MealSection title="Snacks" mealType="snack" meals={log.meals.snack} today={selectedDate} removeMealEntry={removeMealEntry} />
       </div>
     </div>
   )
