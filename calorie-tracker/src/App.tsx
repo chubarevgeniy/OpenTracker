@@ -8,7 +8,7 @@ import Settings from './pages/Settings'
 
 function App() {
   return (
-    <BrowserRouter basename="/calorie-tracker/">
+    <BrowserRouter basename="/OpenTracker/">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
