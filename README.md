@@ -4,9 +4,7 @@ A mobile-friendly Calorie Tracker web application built with React, TypeScript, 
 
 ## Live Demo
 
-[Open Calorie Tracker](https://your-username.github.io/calorie-tracker/)
-
-> Note: Make sure to replace `your-username` in the URL above with your actual GitHub username.
+[Open Calorie Tracker](https://chubarevgeniy.github.io/OpenTracker/)
 
 ## Features
 
