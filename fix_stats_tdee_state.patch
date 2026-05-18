@@ -1,0 +1,10 @@
+--- calorie-tracker/src/pages/Stats.tsx
++++ calorie-tracker/src/pages/Stats.tsx
+@@ -16,6 +16,7 @@
+   const [timeRange, setTimeRange] = useState<TimeRange>(30)
+   const [averaging, setAveraging] = useState<'auto' | 'daily' | 'weekly' | 'monthly'>('auto')
+   const [excludeZeroes, setExcludeZeroes] = useState(true)
++  const [tdeeRange, setTdeeRange] = useState<30 | 60 | 90 | 'all'>(30)
+
+   const handleLogWeight = () => {
+     const w = parseFloat(currentWeightInput)

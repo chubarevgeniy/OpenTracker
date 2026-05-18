@@ -1,0 +1,24 @@
+--- calorie-tracker/src/pages/Stats.tsx
++++ calorie-tracker/src/pages/Stats.tsx
+@@ -218,6 +218,22 @@
+             </button>
+           )}
+         </div>
++
++        <div className="flex items-center gap-2">
++          <span className="text-sm text-gray-600 font-medium">Averaging:</span>
++          <div className="flex flex-wrap gap-2 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 p-1">
++            {['auto', 'daily', 'weekly', 'monthly'].map((avg) => (
++              <button
++                key={avg}
++                className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
++                onClick={() => setAveraging(avg as typeof averaging)}
++              >
++                {avg}
++              </button>
++            ))}
++          </div>
++        </div>
+       </header>
+
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">

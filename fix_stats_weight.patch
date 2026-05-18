@@ -1,0 +1,11 @@
+--- calorie-tracker/src/pages/Stats.tsx
++++ calorie-tracker/src/pages/Stats.tsx
+@@ -10,7 +10,7 @@
+   const dailyLogs = useAppStore((state) => state.dailyLogs)
+   const logWeight = useAppStore((state) => state.logWeight)
+   const settings = useAppStore((state) => state.settings)
+-  const settingsWeight = settings.weight
++  const settingsWeight = settings.weight || 0
+
+   const [currentWeightInput, setCurrentWeightInput] = useState(settingsWeight.toString())
+   const [timeRange, setTimeRange] = useState<TimeRange>(30)

@@ -1,0 +1,31 @@
+--- calorie-tracker/src/pages/Stats.tsx
++++ calorie-tracker/src/pages/Stats.tsx
+@@ -255,7 +255,7 @@
+           <select
+             className="bg-white/20 border border-white/30 text-white text-sm rounded-lg p-1.5 focus:ring-white focus:border-white"
+             value={tdeeRange}
+-            onChange={(e) => setTdeeRange(e.target.value === 'all' ? 'all' : Number(e.target.value) as any)}
++            onChange={(e) => setTdeeRange(e.target.value === 'all' ? 'all' : Number(e.target.value) as 30 | 60 | 90)}
+           >
+             <option value="30" className="text-gray-900">Last 30 Days</option>
+             <option value="60" className="text-gray-900">Last 60 Days</option>
+@@ -269,7 +269,8 @@
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 h-72">
+         <h2 className="text-lg font-semibold mb-2">Calories Consumed</h2>
+         <ResponsiveContainer width="100%" height="100%">
+-          <LineChart data={chartData as any} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
++          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
++          <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+             <CartesianGrid strokeDasharray="3 3" vertical={false} />
+             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
+             <YAxis fontSize={12} />
+@@ -283,7 +284,8 @@
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 h-72">
+         <h2 className="text-lg font-semibold mb-2">Body Weight</h2>
+         <ResponsiveContainer width="100%" height="100%">
+-          <LineChart data={chartData as any} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
++          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
++          <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+             <CartesianGrid strokeDasharray="3 3" vertical={false} />
+             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
+             <YAxis domain={['auto', 'auto']} fontSize={12} />

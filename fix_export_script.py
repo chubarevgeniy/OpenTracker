@@ -1,4 +1,11 @@
-import { useAppStore } from '../store'
+import sys
+
+def main():
+    filepath = 'calorie-tracker/src/utils/export.ts'
+    with open(filepath, 'r') as f:
+        content = f.read()
+
+    new_content = """import { useAppStore } from '../store'
 
 export const exportToCSV = () => {
   const { dailyLogs } = useAppStore.getState()
@@ -58,7 +65,7 @@ export const exportToCSV = () => {
     }
   })
 
-  const csvContent = rows.join('\n')
+  const csvContent = rows.join('\\n')
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
 
@@ -70,3 +77,10 @@ export const exportToCSV = () => {
   link.click()
   document.body.removeChild(link)
 }
+"""
+    with open(filepath, 'w') as f:
+        f.write(new_content)
+    print("Export script updated")
+
+if __name__ == "__main__":
+    main()

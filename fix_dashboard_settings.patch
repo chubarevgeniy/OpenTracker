@@ -1,0 +1,35 @@
+--- calorie-tracker/src/pages/Dashboard.tsx
++++ calorie-tracker/src/pages/Dashboard.tsx
+@@ -199,11 +199,11 @@
+             <div
+               className="absolute inset-0 rounded-full"
+               style={{
+-                background: `conic-gradient(#aa3bff ${(totals.calories / settings.targetCalories) * 360}deg, #f3f4f6 0deg)`
++                background: `conic-gradient(#aa3bff ${(totals.calories / Number(settings.targetCalories || 1)) * 360}deg, #f3f4f6 0deg)`
+               }}
+             ></div>
+             <div className="absolute inset-2 bg-white rounded-full flex flex-col items-center justify-center">
+-              <span className="text-2xl font-bold">{Math.round(settings.targetCalories - totals.calories)}</span>
++              <span className="text-2xl font-bold">{Math.round(Number(settings.targetCalories) - totals.calories)}</span>
+               <span className="text-xs text-gray-500 uppercase tracking-wider">Remaining</span>
+             </div>
+           </div>
+@@ -214,15 +214,15 @@
+             </div>
+             <div>
+               <p className="text-gray-500 text-xs">Target</p>
+-              <p className="font-semibold">{settings.targetCalories}</p>
++              <p className="font-semibold">{settings.targetCalories || 0}</p>
+             </div>
+           </div>
+         </div>
+
+         <div className="flex gap-4">
+-          <ProgressBar label="Carbs" current={totals.carbs} target={settings.targetCarbs} colorClass="bg-blue-400" />
+-          <ProgressBar label="Protein" current={totals.protein} target={settings.targetProtein} colorClass="bg-red-400" />
+-          <ProgressBar label="Fat" current={totals.fat} target={settings.targetFat} colorClass="bg-yellow-400" />
++          <ProgressBar label="Carbs" current={totals.carbs} target={Number(settings.targetCarbs)} colorClass="bg-blue-400" />
++          <ProgressBar label="Protein" current={totals.protein} target={Number(settings.targetProtein)} colorClass="bg-red-400" />
++          <ProgressBar label="Fat" current={totals.fat} target={Number(settings.targetFat)} colorClass="bg-yellow-400" />
+         </div>
+       </div>

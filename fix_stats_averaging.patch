@@ -1,0 +1,42 @@
+--- calorie-tracker/src/pages/Stats.tsx
++++ calorie-tracker/src/pages/Stats.tsx
+@@ -87,7 +87,7 @@
+       data.push(point)
+     }
+
+-    if (daysToCalculate > 60 && daysToCalculate <= 180) {
++    if (averaging === 'weekly' || (averaging === 'auto' && daysToCalculate > 60 && daysToCalculate <= 180)) {
+       // Weekly average
+       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       const weeklyData: Record<string, any> = {}
+@@ -121,7 +121,7 @@
+         weight: w.weightCount > 0 ? Number((w.weightSum / w.weightCount).toFixed(1)) : null,
+         goalWeight: w.goalWeight
+       }))
+-    } else if (daysToCalculate > 180) {
++    } else if (averaging === 'monthly' || (averaging === 'auto' && daysToCalculate > 180)) {
+       // Monthly average
+       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       const monthlyData: Record<string, any> = {}
+@@ -218,6 +218,22 @@
+             </button>
+           )}
+         </div>
++
++        <div className="flex items-center gap-2 mt-2">
++          <span className="text-sm text-gray-600 font-medium">Averaging:</span>
++          <div className="flex gap-2 bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 p-1">
++            {['auto', 'daily', 'weekly', 'monthly'].map((avg) => (
++              <button
++                key={avg}
++                className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
++                onClick={() => setAveraging(avg as typeof averaging)}
++              >
++                {avg}
++              </button>
++            ))}
++          </div>
++        </div>
+       </header>
+
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
