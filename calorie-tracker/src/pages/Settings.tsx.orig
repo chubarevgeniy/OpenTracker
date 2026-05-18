@@ -1,4 +1,3 @@
-import { calculateTDEE } from '../utils/calculations'
 import { useState } from 'react'
 import { useAppStore, type Gender, type ActivityLevel, type WeightGoal } from '../store'
 import { exportToCSV } from '../utils/export'
@@ -14,8 +13,8 @@ export default function Settings() {
   const [showGoalForm, setShowGoalForm] = useState(false)
   const [goalForm, setGoalForm] = useState<WeightGoal>(
     settings.weightGoal || {
-      targetWeight: settings.weight || '',
-      initialWeight: settings.weight || '',
+      targetWeight: settings.weight,
+      initialWeight: settings.weight,
       startDate: format(new Date(), 'yyyy-MM-dd'),
       targetDate: format(new Date(new Date().setMonth(new Date().getMonth() + 3)), 'yyyy-MM-dd')
     }
@@ -23,15 +22,15 @@ export default function Settings() {
 
   const calculateTargets = (
     gender: Gender,
-    weight: number | '',
-    height: number | '',
-    age: number | '',
+    weight: number,
+    height: number,
+    age: number,
     activityLevel: ActivityLevel
   ) => {
     // Mifflin-St Jeor Equation
     // Men: (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
     // Women: (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
-    const bmr = 10 * Number(weight) + 6.25 * Number(height) - 5 * Number(age) + (gender === 'male' ? 5 : -161)
+    const bmr = 10 * weight + 6.25 * height - 5 * age + (gender === 'male' ? 5 : -161)
 
     let activityFactor = 1.2
     switch (activityLevel) {
@@ -110,27 +109,6 @@ export default function Settings() {
     setShowGoalForm(false)
   }
 
-  const handleSetTargetFromFormula = () => {
-    const targets = calculateTargets(
-      settings.gender,
-      settings.weight,
-      settings.height,
-      settings.age,
-      settings.activityLevel
-    )
-    updateSettings({ manualTargets: true, ...targets })
-  }
-
-  const handleSetTargetFromTDEE = () => {
-    const dailyLogs = useAppStore.getState().dailyLogs
-    const tdeeCalc = calculateTDEE(dailyLogs, 30) // Default to 30 days for this
-    if (tdeeCalc && tdeeCalc.tdee) {
-      updateSettings({ manualTargets: true, targetCalories: tdeeCalc.tdee })
-    } else {
-      alert("Not enough logged data (minimum 14 days of food and weight) to calculate TDEE.")
-    }
-  }
-
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -171,7 +149,7 @@ export default function Settings() {
               type="number"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
               value={settings.age}
-              onChange={(e) => handleProfileChange('age', e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) => handleProfileChange('age', Number(e.target.value))}
             />
           </div>
           <div>
@@ -180,7 +158,7 @@ export default function Settings() {
               type="number"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
               value={settings.weight}
-              onChange={(e) => handleProfileChange('weight', e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) => handleProfileChange('weight', Number(e.target.value))}
             />
           </div>
           <div>
@@ -189,7 +167,7 @@ export default function Settings() {
               type="number"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
               value={settings.height}
-              onChange={(e) => handleProfileChange('height', e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) => handleProfileChange('height', Number(e.target.value))}
             />
           </div>
         </div>
@@ -227,17 +205,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {settings.manualTargets && (
-          <div className="flex gap-2">
-            <button onClick={handleSetTargetFromFormula} className="flex-1 py-1.5 px-2 bg-purple-50 text-purple-700 text-xs font-medium rounded border border-purple-200 hover:bg-purple-100 transition-colors">
-              Auto from Formula
-            </button>
-            <button onClick={handleSetTargetFromTDEE} className="flex-1 py-1.5 px-2 bg-indigo-50 text-indigo-700 text-xs font-medium rounded border border-indigo-200 hover:bg-indigo-100 transition-colors">
-              Auto from Real TDEE
-            </button>
-          </div>
-        )}
-
         <div>
           <label className="block text-sm font-medium text-gray-700">Daily Calories (kcal)</label>
           <input
@@ -245,7 +212,7 @@ export default function Settings() {
             disabled={!settings.manualTargets}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border disabled:bg-gray-100 focus:border-purple-500 focus:ring-purple-500"
             value={settings.targetCalories}
-            onChange={(e) => handleProfileChange('targetCalories', e.target.value === '' ? '' : Number(e.target.value))}
+            onChange={(e) => handleProfileChange('targetCalories', Number(e.target.value))}
           />
         </div>
 
@@ -257,7 +224,7 @@ export default function Settings() {
               disabled={!settings.manualTargets}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border disabled:bg-gray-100 focus:border-purple-500 focus:ring-purple-500"
               value={settings.targetProtein}
-              onChange={(e) => handleProfileChange('targetProtein', e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) => handleProfileChange('targetProtein', Number(e.target.value))}
             />
           </div>
           <div>
@@ -267,7 +234,7 @@ export default function Settings() {
               disabled={!settings.manualTargets}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border disabled:bg-gray-100 focus:border-purple-500 focus:ring-purple-500"
               value={settings.targetCarbs}
-              onChange={(e) => handleProfileChange('targetCarbs', e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) => handleProfileChange('targetCarbs', Number(e.target.value))}
             />
           </div>
           <div>
@@ -277,7 +244,7 @@ export default function Settings() {
               disabled={!settings.manualTargets}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border disabled:bg-gray-100 focus:border-purple-500 focus:ring-purple-500"
               value={settings.targetFat}
-              onChange={(e) => handleProfileChange('targetFat', e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) => handleProfileChange('targetFat', Number(e.target.value))}
             />
           </div>
         </div>
@@ -317,7 +284,7 @@ export default function Settings() {
                   type="number"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
                   value={goalForm.initialWeight}
-                  onChange={(e) => setGoalForm({...goalForm, initialWeight: e.target.value === '' ? '' : Number(e.target.value)})}
+                  onChange={(e) => setGoalForm({...goalForm, initialWeight: Number(e.target.value)})}
                 />
               </div>
               <div>
@@ -326,7 +293,7 @@ export default function Settings() {
                   type="number"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
                   value={goalForm.targetWeight}
-                  onChange={(e) => setGoalForm({...goalForm, targetWeight: e.target.value === '' ? '' : Number(e.target.value)})}
+                  onChange={(e) => setGoalForm({...goalForm, targetWeight: Number(e.target.value)})}
                 />
               </div>
               <div>

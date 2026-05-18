@@ -1,0 +1,42 @@
+--- calorie-tracker/src/pages/Stats.tsx
++++ calorie-tracker/src/pages/Stats.tsx
+@@ -105,8 +105,8 @@
+             goalWeight: point.goalWeight
+           }
+         }
+-        if (point.calories > 0) {
+-          weeklyData[weekStart].totalCalories += point.calories
++        if (point.calories && point.calories > 0) {
++          weeklyData[weekStart].totalCalories += (point.calories || 0)
+           weeklyData[weekStart].calCount += 1
+         }
+         if (point.weight !== null) {
+@@ -139,8 +139,8 @@
+             goalWeight: point.goalWeight
+           }
+         }
+-        if (point.calories > 0) {
+-          monthlyData[monthStart].totalCalories += point.calories
++        if (point.calories && point.calories > 0) {
++          monthlyData[monthStart].totalCalories += (point.calories || 0)
+           monthlyData[monthStart].calCount += 1
+         }
+         if (point.weight !== null) {
+@@ -295,7 +295,7 @@
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 h-72">
+         <h2 className="text-lg font-semibold mb-2">Calories Consumed</h2>
+         <ResponsiveContainer width="100%" height="100%">
+-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
++          <LineChart data={chartData as any} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+             <CartesianGrid strokeDasharray="3 3" vertical={false} />
+             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
+             <YAxis fontSize={12} />
+@@ -309,7 +309,7 @@
+       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 h-72">
+         <h2 className="text-lg font-semibold mb-2">Body Weight</h2>
+         <ResponsiveContainer width="100%" height="100%">
+-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
++          <LineChart data={chartData as any} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+             <CartesianGrid strokeDasharray="3 3" vertical={false} />
+             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
+             <YAxis domain={['auto', 'auto']} fontSize={12} />
