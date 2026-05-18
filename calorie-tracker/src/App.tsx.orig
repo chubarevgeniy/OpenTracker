@@ -17,14 +17,14 @@ function App() {
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
       if (systemTheme === 'dark') {
-        root.classList.add('dark')
+        root.setAttribute('data-theme', 'dark')
       } else {
-        root.classList.remove('dark')
+        root.setAttribute('data-theme', 'light')
       }
     } else if (theme === 'dark') {
-      root.classList.add('dark')
+      root.setAttribute('data-theme', 'dark')
     } else {
-      root.classList.remove('dark')
+      root.setAttribute('data-theme', 'light')
     }
   }, [theme])
 

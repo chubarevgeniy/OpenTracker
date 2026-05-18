@@ -184,7 +184,7 @@ export default function Stats() {
   return (
     <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen pb-24">
       <header className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">Statistics</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Statistics</h1>
         <div className="flex flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700 p-1">
           {[7, 30, 90, 180, 365, 'all'].map((range) => (
             <button

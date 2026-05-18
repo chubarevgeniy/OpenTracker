@@ -29,7 +29,7 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry }: { title
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 mb-4">
       <div className="flex justify-between items-center mb-3">
         <div>
-          <h3 className="font-semibold text-lg">{title}</h3>
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">{title}</h3>
           <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round(mealCalories)} kcal</span>
         </div>
         <Link
@@ -45,13 +45,13 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry }: { title
           {meals.map((entry) => (
             <div key={entry.id} className="flex justify-between items-center text-sm border-t border-gray-50 pt-2">
               <div className="flex-1">
-                <p className="font-medium">{entry.foodItem.name}</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{entry.foodItem.name}</p>
                 <p className="text-gray-500 dark:text-gray-400 text-xs">
                   {entry.amount}g • {entry.foodItem.brand || 'Generic'}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="font-semibold">{Math.round(entry.calories)} kcal</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{Math.round(entry.calories)} kcal</span>
                 <button
                   onClick={() => removeMealEntry(today, mealType, entry.id)}
                   className="text-red-400 hover:text-red-600"

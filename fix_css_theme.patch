@@ -1,0 +1,8 @@
+--- calorie-tracker/src/index.css
++++ calorie-tracker/src/index.css
+@@ -1,5 +1,6 @@
+ @import "tailwindcss";
++@custom-variant dark (&:where(.dark, .dark *));
+
+ @theme {
+   --color-primary: #aa3bff;

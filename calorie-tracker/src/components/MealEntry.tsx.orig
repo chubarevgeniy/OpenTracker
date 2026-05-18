@@ -54,14 +54,14 @@ export default function MealEntryForm({ foodItem, defaultMealType, onSuccess }: 
           </div>
         )}
         <div>
-          <h2 className="text-xl font-bold leading-tight text-gray-900 dark:text-gray-100">{foodItem.name}</h2>
+          <h2 className="text-xl font-bold leading-tight">{foodItem.name}</h2>
           {foodItem.brand && <p className="text-gray-500 text-sm mt-1">{foodItem.brand}</p>}
         </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (grams or ml)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Amount (grams or ml)</label>
           <div className="relative">
             <input
               type="number"
