@@ -325,14 +325,19 @@ const handleCalculateFromGoal = () => {
 
  <div>
  <label className="block text-sm font-bold text-text mb-2">Gender</label>
- <select
- className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
- value={settings.gender}
- onChange={(e) => handleProfileChange('gender', e.target.value as Gender)}
- >
- <option value="male">Male</option>
- <option value="female">Female</option>
- </select>
+          <div className="relative">
+            <select
+              className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0 appearance-none pr-10"
+              value={settings.gender}
+              onChange={(e) => handleProfileChange('gender', e.target.value as Gender)}
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+              <svg className="h-5 w-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
  </div>
 
  <div className="grid grid-cols-2 gap-3">
@@ -367,17 +372,22 @@ const handleCalculateFromGoal = () => {
 
  <div>
  <label className="block text-sm font-bold text-text mb-2">Activity Level</label>
- <select
- className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
- value={settings.activityLevel}
- onChange={(e) => handleProfileChange('activityLevel', e.target.value as ActivityLevel)}
- >
- <option value="sedentary">Sedentary</option>
- <option value="light">Light Active</option>
- <option value="moderate">Moderately Active</option>
- <option value="active">Active</option>
- <option value="very_active">Very Active</option>
- </select>
+          <div className="relative">
+            <select
+              className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0 appearance-none pr-10"
+              value={settings.activityLevel}
+              onChange={(e) => handleProfileChange('activityLevel', e.target.value as ActivityLevel)}
+            >
+              <option value="sedentary">Sedentary (office job, little exercise)</option>
+              <option value="light">Light (exercise 1-3 days/week)</option>
+              <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+              <option value="active">Active (exercise 6-7 days/week)</option>
+              <option value="very_active">Very Active (hard exercise daily/physical job)</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+              <svg className="h-5 w-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
  </div>
  </div>
 
@@ -424,26 +434,36 @@ const handleCalculateFromGoal = () => {
  <div className="grid grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-bold text-text mb-1">Base TDEE on:</label>
- <select
- className="block w-full rounded-xl border-transparent shadow-sm p-2 text-xs bg-surface font-medium focus:border-primary focus:ring-0"
- value={tdeeSource}
- onChange={(e) => setTdeeSource(e.target.value as 'formula' | 'real')}
- >
- <option value="formula">Formula</option>
- <option value="real">Real TDEE</option>
- </select>
+              <div className="relative">
+                <select
+                  className="block w-full rounded-xl border-transparent shadow-sm p-2 text-xs bg-surface font-medium focus:border-primary focus:ring-0 appearance-none pr-8"
+                  value={tdeeSource}
+                  onChange={(e) => setTdeeSource(e.target.value as 'formula' | 'real')}
+                >
+                  <option value="formula">Estimated (Formula)</option>
+                  <option value="real">Real (Logged Data)</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                  <svg className="h-4 w-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+              </div>
  </div>
 
  <div>
  <label className="block text-xs font-bold text-text mb-1">Calculate from:</label>
- <select
- className="block w-full rounded-xl border-transparent shadow-sm p-2 text-xs bg-surface font-medium focus:border-primary focus:ring-0"
- value={goalTimeline}
- onChange={(e) => setGoalTimeline(e.target.value as 'current' | 'start')}
- >
- <option value="current">Current Weight</option>
- <option value="start">Initial Weight</option>
- </select>
+              <div className="relative">
+                <select
+                  className="block w-full rounded-xl border-transparent shadow-sm p-2 text-xs bg-surface font-medium focus:border-primary focus:ring-0 appearance-none pr-8"
+                  value={goalTimeline}
+                  onChange={(e) => setGoalTimeline(e.target.value as 'current' | 'start')}
+                >
+                  <option value="current">Current Weight</option>
+                  <option value="start">Start of Goal</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                  <svg className="h-4 w-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+              </div>
  </div>
  </div>
 
@@ -682,7 +702,7 @@ const handleCalculateFromGoal = () => {
 
  <button
  onClick={handleReset}
- className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-[#FFF5F5] text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors mt-4"
+          className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold rounded-xl hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors mt-4"
  >
  <Trash2 size={20} strokeWidth={2.5}/>
  Reset All Data
