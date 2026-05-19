@@ -98,6 +98,7 @@ interface AppState {
   removeMealEntry: (date: string, mealType: MealType, entryId: string) => void
   logWeight: (date: string, weight: number) => void
   addSearchHistory: (foodItem: FoodItem) => void
+  importData: (logs: Record<string, DailyLog>) => void
   resetData: () => void
 }
 
@@ -235,6 +236,11 @@ export const useAppStore = create<AppState>()(
             },
           }
         }),
+
+      importData: (logs) =>
+        set((state) => ({
+          dailyLogs: { ...state.dailyLogs, ...logs }
+        })),
 
       resetData: () => set(() => ({ dailyLogs: {}, searchHistory: {} })),
     }),
