@@ -1,14 +1,22 @@
-import { differenceInDays } from 'date-fns'
+import { differenceInDays, subDays, format } from 'date-fns'
 import type { DailyLog } from '../store'
 
 export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: number | 'all', endDate: Date = new Date()) {
- // Find earliest weight within range days
- const logsInPeriod = Object.values(dailyLogs).filter(log => {
- const date = new Date(log.date)
-    // Ignore dates in the future relative to endDate
-    if (date > endDate) return false
-    return tdeeRange === 'all' ? true : differenceInDays(endDate, date) <= tdeeRange
- }).sort((a, b) => a.date.localeCompare(b.date))
+  const endDateStr = format(endDate, 'yyyy-MM-dd')
+  let logsInPeriod: DailyLog[] = []
+
+  if (tdeeRange === 'all') {
+    logsInPeriod = Object.values(dailyLogs)
+      .filter(log => log.date <= endDateStr)
+      .sort((a, b) => a.date.localeCompare(b.date))
+  } else {
+    for (let i = tdeeRange; i >= 0; i--) {
+      const dateStr = format(subDays(endDate, i), 'yyyy-MM-dd')
+      if (dailyLogs[dateStr]) {
+        logsInPeriod.push(dailyLogs[dateStr])
+      }
+    }
+  }
 
  if (logsInPeriod.length < 5) return null // Need more data
 
