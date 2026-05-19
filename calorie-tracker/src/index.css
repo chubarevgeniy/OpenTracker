@@ -31,9 +31,9 @@
     --theme-bg-alt: #030712;
     --theme-text: #f9fafb;
     --theme-text-muted: #9ca3af;
-    --theme-border: #1f2937;
+    --theme-border: #374151;
     --theme-surface: #1f2937;
-    --theme-surface-hover: #374151;
+    --theme-surface-hover: #4b5563;
   }
 
   body {

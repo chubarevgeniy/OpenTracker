@@ -97,15 +97,15 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
  <div className="text-lg font-bold text-text">{Math.round(foodItem.calories * factor)}</div>
  <div className="text-xs text-text-muted">kcal</div>
  </div>
- <div className="bg-blue-50 p-2 rounded-lg text-blue-900">
+ <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-900 dark:text-blue-300">
  <div className="text-lg font-bold">{Math.round(foodItem.carbs * factor)}</div>
  <div className="text-xs opacity-70">Carbs</div>
  </div>
- <div className="bg-red-50 p-2 rounded-lg text-red-900">
+ <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg text-red-900 dark:text-red-300">
  <div className="text-lg font-bold">{Math.round(foodItem.protein * factor)}</div>
  <div className="text-xs opacity-70">Protein</div>
  </div>
- <div className="bg-yellow-50 p-2 rounded-lg text-yellow-900">
+ <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg text-yellow-900 dark:text-yellow-300">
  <div className="text-lg font-bold">{Math.round(foodItem.fat * factor)}</div>
  <div className="text-xs opacity-70">Fat</div>
  </div>

@@ -381,16 +381,16 @@ const handleCalculateFromGoal = () => {
 {settings.manualTargets && (
  <div className="space-y-2">
  <div className="flex gap-2">
- <button onClick={handleSetTargetFromFormula} className="flex-1 py-1.5 px-2 bg-purple-50 text-purple-700 text-xs font-medium rounded border border-purple-200 hover:bg-purple-100 transition-colors">
+ <button onClick={handleSetTargetFromFormula} className="flex-1 py-1.5 px-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-xs font-medium rounded border border-purple-200 dark:border-purple-800/50 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
  Auto from Formula
  </button>
- <button onClick={handleSetTargetFromTDEE} className="flex-1 py-1.5 px-2 bg-indigo-50 text-indigo-700 text-xs font-medium rounded border border-indigo-200 hover:bg-indigo-100 transition-colors">
+ <button onClick={handleSetTargetFromTDEE} className="flex-1 py-1.5 px-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 text-xs font-medium rounded border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
  Auto from Real TDEE
  </button>
  {settings.weightGoal && (
  <button
  onClick={() => setShowGoalCalculator(!showGoalCalculator)}
- className={`flex-1 py-1.5 px-2 text-xs font-medium rounded border transition-colors ${showGoalCalculator ? 'bg-pink-100 text-pink-800 border-pink-300' : 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100'}`}
+ className={`flex-1 py-1.5 px-2 text-xs font-medium rounded border transition-colors ${showGoalCalculator ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300 border-pink-300 dark:border-pink-800/50' : 'bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400 border-pink-200 dark:border-pink-800/30 hover:bg-pink-100 dark:hover:bg-pink-900/40'}`}
  >
  Calc from Goal
  </button>
@@ -398,7 +398,7 @@ const handleCalculateFromGoal = () => {
  </div>
 
  {settings.weightGoal && showGoalCalculator && (
- <div className="p-3 bg-pink-50 border border-pink-100 rounded-lg text-sm space-y-3">
+ <div className="p-3 bg-pink-50 dark:bg-pink-900/20 border border-pink-100 dark:border-pink-900/50 rounded-lg text-sm space-y-3">
  <p className="font-medium text-pink-800 text-xs uppercase tracking-wide">Goal Calculator</p>
 
  <div className="grid grid-cols-2 gap-3">
@@ -447,7 +447,7 @@ const handleCalculateFromGoal = () => {
  type="button"
  onClick={() => setShowInfoTooltip(!showInfoTooltip)}
  onBlur={() => setShowInfoTooltip(false)}
- className="p-1 rounded-full hover:bg-purple-50 hover:bg-purple-900/30 focus:outline-none"
+ className="p-1 rounded-full hover:bg-purple-50 dark:hover:bg-purple-900/30 focus:outline-none"
  >
  <Info size={16} className="text-purple-500 cursor-pointer"/>
  </button>
@@ -559,8 +559,8 @@ const handleCalculateFromGoal = () => {
  </div>
 
  {settings.weightGoal && !showGoalForm && (
- <div className="bg-purple-50 border border-purple-100 p-4 rounded-xl flex items-center gap-4">
- <div className="p-3 bg-purple-100 text-purple-600 rounded-full">
+ <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/50 p-4 rounded-xl flex items-center gap-4">
+ <div className="p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full">
  <Target size={24} />
  </div>
  <div className="flex-1">
@@ -616,7 +616,7 @@ const handleCalculateFromGoal = () => {
  {settings.weightGoal && (
  <button
  onClick={handleRemoveGoal}
- className="px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg"
+ className="px-4 py-2 text-red-600 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
  >
  Remove Goal
  </button>
@@ -638,7 +638,7 @@ const handleCalculateFromGoal = () => {
  Export your daily logs and weight history to a CSV file, import from an existing CSV, or reset all local data.
  </p>
 
- <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-purple-50 text-purple-700 font-medium rounded-xl hover:bg-purple-100 transition-colors border border-purple-200 cursor-pointer mb-4">
+ <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-medium rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors border border-purple-200 dark:border-purple-800/50 cursor-pointer mb-4">
  <ImageIcon size={20} />
  {parsingImage ? 'Parsing...' : 'Parse from Image'}
  <input type="file"accept="image/*"onChange={handleImageUpload} className="hidden"disabled={parsingImage} />
@@ -647,13 +647,13 @@ const handleCalculateFromGoal = () => {
  <div className="grid grid-cols-2 gap-4">
  <button
  onClick={exportToCSV}
- className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-green-50 text-green-700 font-medium rounded-xl hover:bg-green-100 transition-colors border border-green-200"
+ className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-medium rounded-xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors border border-green-200 dark:border-green-800/50"
  >
  <Download size={20} />
  Export
  </button>
 
- <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-blue-50 text-blue-700 font-medium rounded-xl hover:bg-blue-100 transition-colors border border-blue-200 cursor-pointer">
+ <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-medium rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors border border-blue-200 dark:border-blue-800/50 cursor-pointer">
  <Upload size={20} />
  Import
  <input type="file"accept=".csv,text/csv,application/csv,application/x-csv,text/comma-separated-values,text/x-csv,text/x-comma-separated-values,application/vnd.ms-excel"onChange={handleImport} className="hidden"/>
@@ -662,7 +662,7 @@ const handleCalculateFromGoal = () => {
 
  <button
  onClick={handleReset}
- className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-red-50 text-red-700 font-medium rounded-xl hover:bg-red-100 transition-colors border border-red-200 mt-4"
+ className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 font-medium rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-200 dark:border-red-800/50 mt-4"
  >
  <Trash2 size={20} />
  Reset All Data
@@ -675,7 +675,7 @@ const handleCalculateFromGoal = () => {
  <h3 className="text-lg font-bold text-text">Parsed Data</h3>
 
  {useAppStore.getState().dailyLogs[parsedData.date] && (
- <div className="p-3 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-200">
+ <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 text-sm rounded-lg border border-yellow-200 dark:border-yellow-800/50">
  Warning: Data already exists for {parsedData.date}.
  </div>
  )}
