@@ -59,6 +59,8 @@ export default function Stats() {
  })
  }
 
+      const historicalTdeeCalc = calculateTDEE(dailyLogs, 14, date)
+
  data.push({
  dateObj: date,
  date: format(date, 'MMM dd'),
@@ -66,6 +68,7 @@ export default function Stats() {
  calories: excludeZeroes && calories === 0 ? null : Math.round(calories),
  weight: log?.weight || null,
  goalWeight: settings.weightGoal ? settings.weightGoal.targetWeight : null,
+        tdee: historicalTdeeCalc ? historicalTdeeCalc.tdee : null,
  })
  }
 
@@ -118,7 +121,9 @@ export default function Stats() {
  calCount: 0,
  weightSum: 0,
  weightCount: 0,
- goalWeight: point.goalWeight
+            goalWeight: point.goalWeight,
+            tdeeSum: 0,
+            tdeeCount: 0,
  }
  }
  if (point.calories !== null) {
@@ -129,6 +134,10 @@ export default function Stats() {
  weeklyData[weekStart].weightSum += point.weight
  weeklyData[weekStart].weightCount += 1
  }
+        if (point.tdee !== null) {
+          weeklyData[weekStart].tdeeSum += point.tdee
+          weeklyData[weekStart].tdeeCount += 1
+        }
  })
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
  return Object.values(weeklyData).map((w: any) => ({
@@ -136,7 +145,8 @@ export default function Stats() {
  fullDate: w.fullDate,
  calories: w.calCount > 0 ? Math.round(w.totalCalories / w.calCount) : null,
  weight: w.weightCount > 0 ? Number((w.weightSum / w.weightCount).toFixed(1)) : null,
- goalWeight: w.goalWeight
+        goalWeight: w.goalWeight,
+        tdee: w.tdeeCount > 0 ? Math.round(w.tdeeSum / w.tdeeCount) : null,
  }))
  } else if (averaging === 'monthly' || (averaging === 'auto' && daysToCalculate > 180)) {
  // Monthly average
@@ -152,7 +162,9 @@ export default function Stats() {
  calCount: 0,
  weightSum: 0,
  weightCount: 0,
- goalWeight: point.goalWeight
+            goalWeight: point.goalWeight,
+            tdeeSum: 0,
+            tdeeCount: 0,
  }
  }
  if (point.calories !== null) {
@@ -163,6 +175,10 @@ export default function Stats() {
  monthlyData[monthStart].weightSum += point.weight
  monthlyData[monthStart].weightCount += 1
  }
+        if (point.tdee !== null) {
+          monthlyData[monthStart].tdeeSum += point.tdee
+          monthlyData[monthStart].tdeeCount += 1
+        }
  })
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
  return Object.values(monthlyData).map((m: any) => ({
@@ -170,7 +186,8 @@ export default function Stats() {
  fullDate: m.fullDate,
  calories: m.calCount > 0 ? Math.round(m.totalCalories / m.calCount) : null,
  weight: m.weightCount > 0 ? Number((m.weightSum / m.weightCount).toFixed(1)) : null,
- goalWeight: m.goalWeight
+        goalWeight: m.goalWeight,
+        tdee: m.tdeeCount > 0 ? Math.round(m.tdeeSum / m.tdeeCount) : null,
  }))
  }
 
@@ -285,6 +302,20 @@ export default function Stats() {
  </LineChart>
  </ResponsiveContainer>
  </div>
+
+      <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border h-72">
+        <h2 className="text-lg font-semibold mb-2">Base Consumption (TDEE)</h2>
+        <ResponsiveContainer width="100%" height="100%">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="date" fontSize={12} tickMargin={10} />
+            <YAxis domain={['auto', 'auto']} fontSize={12} />
+            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+            <Line type="monotone" dataKey="tdee" stroke="#f59e0b" strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="TDEE (kcal)" connectNulls={true} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
 
  {/* Real Energy Expenditure Card */}
  <div className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md">
