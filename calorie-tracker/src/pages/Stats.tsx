@@ -206,7 +206,7 @@ export default function Stats() {
  {[7, 30, 90, 180, 365, 'all'].map((range) => (
  <button
  key={range}
- className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === range ? 'bg-purple-100 text-purple-700 font-medium' : 'text-text-muted hover:bg-bg'}`}
+ className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === range ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium' : 'text-text-muted hover:bg-bg'}`}
  onClick={() => setTimeRange(range as TimeRange)}
  >
  {typeof range === 'number' ? (range >= 30 ? (range === 365 ? '1Y' : `${range/30}M`) : `${range}D`) : 'All'}
@@ -214,7 +214,7 @@ export default function Stats() {
  ))}
  {settings.weightGoal && (
  <button
- className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === 'goal' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-text-muted hover:bg-bg'}`}
+ className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === 'goal' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium' : 'text-text-muted hover:bg-bg'}`}
  onClick={() => setTimeRange('goal')}
  >
  Goal
@@ -227,7 +227,7 @@ export default function Stats() {
  {['auto', 'daily', 'weekly', 'monthly'].map((avg) => (
  <button
  key={avg}
- className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 text-purple-700 font-medium' : 'text-text-muted hover:bg-bg'}`}
+ className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium' : 'text-text-muted hover:bg-bg'}`}
  onClick={() => setAveraging(avg as typeof averaging)}
  >
  {avg}
@@ -278,7 +278,7 @@ export default function Stats() {
  <CartesianGrid strokeDasharray="3 3"vertical={false} />
  <XAxis dataKey="date"fontSize={12} tickMargin={10} />
  <YAxis fontSize={12} />
- <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+            <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
  <Line type="monotone"dataKey="calories"stroke="#c084fc"strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="Calories"connectNulls={true} />
  <ReferenceLine y={settings.targetCalories} stroke="#e5e7eb"strokeDasharray="3 3"/>
  </LineChart>
@@ -294,7 +294,7 @@ export default function Stats() {
  <CartesianGrid strokeDasharray="3 3"vertical={false} />
  <XAxis dataKey="date"fontSize={12} tickMargin={10} />
  <YAxis domain={['auto', 'auto']} fontSize={12} />
- <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+            <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
  <Line type="monotone"dataKey="weight"stroke="#3b82f6"strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="Weight (kg)"/>
  {settings.weightGoal && (
  <Line type="monotone"dataKey="goalWeight"stroke="#10b981"strokeWidth={2} strokeDasharray="5 5"dot={false} name="Goal (kg)"/>
@@ -311,7 +311,7 @@ export default function Stats() {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="date" fontSize={12} tickMargin={10} />
             <YAxis domain={['auto', 'auto']} fontSize={12} />
-            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+            <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
             <Line type="monotone" dataKey="tdee" stroke="#f59e0b" strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="TDEE (kcal)" connectNulls={true} />
           </LineChart>
         </ResponsiveContainer>
