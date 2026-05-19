@@ -27,7 +27,12 @@ const parseCSVRow = (text: string): string[] => {
  return result
 }
 
-export const importFromCSV = (file: File) => {
+export interface ImportOptions {
+ weight: boolean
+ nutrition: boolean
+}
+
+export const importFromCSV = (file: File, options: ImportOptions = { weight: true, nutrition: true }) => {
  const reader = new FileReader()
 
  reader.onload = (e) => {
@@ -54,15 +59,22 @@ export const importFromCSV = (file: File) => {
 
  if (!date) continue
 
+ const existingLog = store.dailyLogs[date]
+
  if (!importedLogs[date]) {
  importedLogs[date] = {
  date,
- meals: { breakfast: [], lunch: [], dinner: [], snack: [] }
+ // If we aren't importing nutrition, copy the existing meals over so we don't overwrite them with empties
+ meals: (!options.nutrition && existingLog)
+ ? existingLog.meals
+ : { breakfast: [], lunch: [], dinner: [], snack: [] },
+ // If we aren't importing weight, copy the existing weight
+ weight: (!options.weight && existingLog) ? existingLog.weight : undefined
  }
  importedDays++
  }
 
- if (weightStr) {
+ if (options.weight && weightStr) {
  const weight = parseFloat(weightStr)
  if (!isNaN(weight)) {
  importedLogs[date].weight = weight
@@ -80,7 +92,7 @@ export const importFromCSV = (file: File) => {
  const foodId = columns[13]
  const brand = columns[14]
 
- if (mealType && foodName && amountStr && caloriesStr && proteinStr && carbsStr && fatStr && foodId) {
+ if (options.nutrition && mealType && foodName && amountStr && caloriesStr && proteinStr && carbsStr && fatStr && foodId) {
  const amount = parseFloat(amountStr)
  const calories = parseFloat(caloriesStr)
  const protein = parseFloat(proteinStr)
