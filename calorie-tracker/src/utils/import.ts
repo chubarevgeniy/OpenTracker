@@ -1,6 +1,12 @@
 import { useAppStore } from '../store'
 import type { DailyLog, MealEntry, MealType } from '../store'
 
+// Helper to sanitize imported string fields by removing HTML tags
+const sanitizeString = (str: string | undefined): string => {
+ if (!str) return ''
+ return str.replace(/<[^>]*>?/gm, '')
+}
+
 // Helper to parse CSV row considering quotes
 const parseCSVRow = (text: string): string[] => {
  const result: string[] = []
@@ -82,15 +88,18 @@ export const importFromCSV = (file: File, options: ImportOptions = { weight: tru
  }
 
  // Check if there is meal data (Meal Type is at index 6)
- const mealType = columns[6] as MealType
- const foodName = columns[7]
+ const rawMealType = columns[6]?.toLowerCase()
+ const validMealTypes: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack']
+ const mealType = validMealTypes.includes(rawMealType as MealType) ? (rawMealType as MealType) : undefined
+
+ const foodName = sanitizeString(columns[7])
  const amountStr = columns[8]
  const caloriesStr = columns[9]
  const proteinStr = columns[10]
  const carbsStr = columns[11]
  const fatStr = columns[12]
- const foodId = columns[13]
- const brand = columns[14]
+ const foodId = sanitizeString(columns[13])
+ const brand = sanitizeString(columns[14])
 
  if (options.nutrition && mealType && foodName && amountStr && caloriesStr && proteinStr && carbsStr && fatStr && foodId) {
  const amount = parseFloat(amountStr)
@@ -127,7 +136,7 @@ export const importFromCSV = (file: File, options: ImportOptions = { weight: tru
  timestamp: Date.now() // Use current time as fallback
  }
 
- if (['breakfast', 'lunch', 'dinner', 'snack'].includes(mealType)) {
+ if (mealType && validMealTypes.includes(mealType)) {
  importedLogs[date].meals[mealType].push(entry)
  importedMeals++
  }
