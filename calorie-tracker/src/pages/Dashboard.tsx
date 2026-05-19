@@ -53,7 +53,7 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  </div>
  <Link
  to={`/search?meal=${mealType}&date=${today}`}
- className="p-2 bg-purple-50 text-purple-600 rounded-full hover:bg-purple-100"
+ className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/40"
  >
  <Plus size={20} />
  </Link>
@@ -81,7 +81,7 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  <div className="flex items-center gap-2">
  <button
  onClick={() => handleSaveEdit(entry.id)}
- className="p-1.5 bg-green-100 text-green-600 bg-green-900 text-green-400 rounded-full hover:bg-green-200 hover:bg-green-800"
+ className="p-1.5 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-full hover:bg-green-200 dark:hover:bg-green-900/60"
  >
  <Check size={16} />
  </button>
@@ -233,7 +233,7 @@ export default function Dashboard() {
 
  {/* Weight Input */}
  <div className="bg-surface p-4 rounded-xl shadow-sm border border-border flex items-center gap-4">
- <div className="p-2 bg-blue-50 text-blue-600 rounded-full">
+ <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full">
  <Scale size={20} />
  </div>
  <form onSubmit={handleWeightSubmit} className="flex-1 flex gap-2">
