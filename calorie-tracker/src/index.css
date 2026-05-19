@@ -2,8 +2,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #aa3bff;
-  --color-primary-hover: #902bd9;
+  --color-primary: #c5f82a;
+  --color-primary-hover: #b1df26;
   --color-bg: var(--theme-bg);
   --color-bg-alt: var(--theme-bg-alt);
   --color-text: var(--theme-text);
@@ -11,8 +11,6 @@
   --color-border: var(--theme-border);
   --color-surface: var(--theme-surface);
   --color-surface-hover: var(--theme-surface-hover);
-  --color-bg: var(--theme-bg);
-  --color-bg-alt: var(--theme-bg-alt);
 }
 
 @layer base {

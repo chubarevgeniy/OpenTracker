@@ -45,69 +45,74 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
  const factor = (amount || 0) / 100
 
  return (
- <div className="bg-surface rounded-2xl p-6 shadow-sm border border-border">
- <div className="flex gap-4 items-start mb-6">
+ <div className="bg-surface rounded-3xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent">
+ <div className="flex gap-4 items-start mb-6 pb-6 border-b border-border">
  {foodItem.image_url ? (
- <img src={foodItem.image_url} alt={foodItem.name} className="w-20 h-20 object-cover rounded-xl"/>
+ <img src={foodItem.image_url} alt={foodItem.name} className="w-24 h-24 object-cover rounded-2xl shadow-sm"/>
  ) : (
- <div className="w-20 h-20 bg-surface-hover rounded-xl flex items-center justify-center">
- <span className="text-text-muted text-xs">No image</span>
+ <div className="w-24 h-24 bg-bg-alt rounded-2xl flex items-center justify-center">
+ <span className="text-text-muted text-xs font-bold">No image</span>
  </div>
  )}
- <div>
- <h2 className="text-xl font-bold leading-tight text-text">{foodItem.name}</h2>
- {foodItem.brand && <p className="text-text-muted text-sm mt-1">{foodItem.brand}</p>}
+ <div className="flex-1 py-1">
+ <h2 className="text-2xl font-black leading-tight text-text tracking-tight">{foodItem.name}</h2>
+ {foodItem.brand && <p className="text-text-muted text-sm mt-1 font-bold">{foodItem.brand}</p>}
  </div>
  </div>
 
- <div className="space-y-4">
+ <div className="space-y-5">
  <div>
- <label className="block text-sm font-medium text-text mb-1">Amount (grams or ml)</label>
+ <label className="block text-sm font-bold text-text mb-2">Amount (grams or ml)</label>
  <div className="relative">
  <input
  type="number"
  min="1"
  value={amount}
  onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
- className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-medium"
+ className="w-full p-4 bg-bg border-2 border-transparent rounded-2xl focus:ring-0 focus:border-primary text-xl font-black transition-colors"
  />
- <span className="absolute right-4 top-3.5 text-text-muted">g</span>
+ <span className="absolute right-5 top-4.5 text-text-muted font-bold text-lg">g</span>
  </div>
  </div>
 
  <div>
- <label className="block text-sm font-medium text-text mb-1">Meal</label>
+ <label className="block text-sm font-bold text-text mb-2">Meal</label>
+ <div className="relative">
  <select
  value={mealType}
  onChange={(e) => setMealType(e.target.value as MealType)}
- className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-surface text-text"
+ className="w-full p-4 bg-bg border-2 border-transparent rounded-2xl focus:ring-0 focus:border-primary text-text font-bold text-lg appearance-none transition-colors"
  >
  <option value="breakfast">Breakfast</option>
  <option value="lunch">Lunch</option>
  <option value="dinner">Dinner</option>
  <option value="snack">Snack</option>
  </select>
+ <div className="pointer-events-none absolute inset-y-0 right-5 flex items-center">
+ <svg className="h-5 w-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+ </div>
+ </div>
  </div>
  </div>
 
- <div className="mt-8 pt-6 border-t border-border">
- <h3 className="text-sm font-semibold text-text-muted mb-3 uppercase tracking-wider">Nutrition Info</h3>
- <div className="grid grid-cols-4 gap-2 text-center">
- <div className="bg-bg-alt p-2 rounded-lg">
- <div className="text-lg font-bold text-text">{Math.round(foodItem.calories * factor)}</div>
- <div className="text-xs text-text-muted">kcal</div>
+ <div className="mt-8">
+ <h3 className="text-xs font-black text-text-muted mb-4 uppercase tracking-widest text-center">Nutrition Summary</h3>
+ <div className="grid grid-cols-4 gap-3 text-center">
+ <div className="bg-text text-surface p-3 rounded-2xl shadow-sm flex flex-col justify-center min-h-[90px]">
+ <div className="text-2xl font-black leading-none">{Math.round(foodItem.calories * factor)}</div>
+ <div className="text-[10px] font-bold opacity-80 uppercase tracking-widest mt-1">kcal</div>
  </div>
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-900 dark:text-blue-300">
- <div className="text-lg font-bold">{Math.round(foodItem.carbs * factor)}</div>
- <div className="text-xs opacity-70">Carbs</div>
+ <div className="bg-[#EBF8FF] dark:bg-blue-900/30 p-3 rounded-2xl text-blue-600 dark:text-blue-300 flex flex-col justify-center min-h-[90px]">
+ <div className="text-2xl font-black leading-none">{Math.round(foodItem.carbs * factor)}</div>
+ <div className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-1">Carbs</div>
  </div>
-        <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg text-red-900 dark:text-red-300">
- <div className="text-lg font-bold">{Math.round(foodItem.protein * factor)}</div>
- <div className="text-xs opacity-70">Protein</div>
+ <div className="bg-[#FFF5F5] dark:bg-red-900/30 p-3 rounded-2xl text-red-500 dark:text-red-300 flex flex-col justify-center min-h-[90px]">
+ <div className="text-2xl font-black leading-none">{Math.round(foodItem.protein * factor)}</div>
+ <div className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-1">Protein</div>
  </div>
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg text-yellow-900 dark:text-yellow-300">
- <div className="text-lg font-bold">{Math.round(foodItem.fat * factor)}</div>
- <div className="text-xs opacity-70">Fat</div>
+ <div className="bg-[#FFFFF0] dark:bg-yellow-900/30 p-3 rounded-2xl text-yellow-600 dark:text-yellow-300 flex flex-col justify-center min-h-[90px]">
+ <div className="text-2xl font-black leading-none">{Math.round(foodItem.fat * factor)}</div>
+ <div className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-1">Fat</div>
  </div>
  </div>
  </div>
@@ -115,9 +120,9 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
  <button
  onClick={handleAdd}
  disabled={!amount || amount <= 0}
- className="w-full mt-8 bg-purple-600 text-white font-semibold py-4 rounded-xl shadow-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+ className="w-full mt-8 bg-primary text-black font-black text-lg py-5 rounded-2xl shadow-[0_4px_14px_rgba(197,248,42,0.4)] hover:opacity-90 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed transition-all"
  >
- Add to Log
+ Add to Diary
  </button>
  </div>
  )

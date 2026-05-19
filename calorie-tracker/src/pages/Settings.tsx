@@ -283,50 +283,50 @@ const handleCalculateFromGoal = () => {
  }
 
  return (
- <div className="p-4 space-y-6">
- <h1 className="text-2xl font-bold text-text">Settings</h1>
+ <div className="p-4 space-y-6 pb-24">
+ <h1 className="text-2xl font-black text-text pt-2">Settings</h1>
 
- <div className="space-y-4">
- <h2 className="text-xl font-semibold text-text">Appearance</h2>
+ <div className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent">
+ <h2 className="text-lg font-bold text-text">Appearance</h2>
 
  <div>
- <label className="block text-sm font-medium text-text mb-2">Theme</label>
- <div className="flex bg-surface-hover p-1 rounded-lg">
+ <label className="block text-sm font-bold text-text mb-3">Theme</label>
+ <div className="flex bg-bg p-1.5 rounded-2xl">
  <button
  onClick={() => updateSettings({ theme: 'light' })}
- className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-colors ${
- settings.theme === 'light' ? 'bg-surface shadow text-text' : 'text-text-muted hover:text-text'
+ className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-xl transition-colors ${
+ settings.theme === 'light' ? 'bg-surface shadow-sm text-text' : 'text-text-muted hover:text-text'
  }`}
  >
- <Sun size={16} /> Light
+ <Sun size={18} strokeWidth={2.5}/> Light
  </button>
  <button
  onClick={() => updateSettings({ theme: 'dark' })}
- className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-colors ${
- settings.theme === 'dark' ? 'bg-surface shadow text-text' : 'text-text-muted hover:text-text'
+ className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-xl transition-colors ${
+ settings.theme === 'dark' ? 'bg-surface shadow-sm text-text' : 'text-text-muted hover:text-text'
  }`}
  >
- <Moon size={16} /> Dark
+ <Moon size={18} strokeWidth={2.5}/> Dark
  </button>
  <button
  onClick={() => updateSettings({ theme: 'system' })}
- className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-colors ${
- settings.theme === 'system' ? 'bg-surface shadow text-text' : 'text-text-muted hover:text-text'
+ className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-xl transition-colors ${
+ settings.theme === 'system' ? 'bg-surface shadow-sm text-text' : 'text-text-muted hover:text-text'
  }`}
  >
- <Laptop size={16} /> System
+ <Laptop size={18} strokeWidth={2.5}/> System
  </button>
  </div>
  </div>
  </div>
 
- <div className="space-y-4 pt-4 border-t border-border">
- <h2 className="text-xl font-semibold text-text">Profile</h2>
+ <div className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent">
+ <h2 className="text-lg font-bold text-text mb-2">Profile</h2>
 
  <div>
- <label className="block text-sm font-medium text-text">Gender</label>
+ <label className="block text-sm font-bold text-text mb-2">Gender</label>
  <select
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={settings.gender}
  onChange={(e) => handleProfileChange('gender', e.target.value as Gender)}
  >
@@ -335,30 +335,30 @@ const handleCalculateFromGoal = () => {
  </select>
  </div>
 
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-2 gap-3">
  <div>
- <label className="block text-sm font-medium text-text">Age</label>
+ <label className="block text-sm font-bold text-text mb-2">Age</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={settings.age}
  onChange={(e) => handleProfileChange('age', e.target.value === '' ? '' : Number(e.target.value))}
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Weight (kg)</label>
+ <label className="block text-sm font-bold text-text mb-2">Weight (kg)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={settings.weight}
  onChange={(e) => handleProfileChange('weight', e.target.value === '' ? '' : Number(e.target.value))}
  />
  </div>
- <div>
- <label className="block text-sm font-medium text-text">Height (cm)</label>
+ <div className="col-span-2">
+ <label className="block text-sm font-bold text-text mb-2">Height (cm)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={settings.height}
  onChange={(e) => handleProfileChange('height', e.target.value === '' ? '' : Number(e.target.value))}
  />
@@ -366,51 +366,51 @@ const handleCalculateFromGoal = () => {
  </div>
 
  <div>
- <label className="block text-sm font-medium text-text">Activity Level</label>
+ <label className="block text-sm font-bold text-text mb-2">Activity Level</label>
  <select
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={settings.activityLevel}
  onChange={(e) => handleProfileChange('activityLevel', e.target.value as ActivityLevel)}
  >
- <option value="sedentary">Sedentary (Little or no exercise)</option>
- <option value="light">Light (Exercise 1-3 days/week)</option>
- <option value="moderate">Moderate (Exercise 3-5 days/week)</option>
- <option value="active">Active (Exercise 6-7 days/week)</option>
- <option value="very_active">Very Active (Hard exercise/sports)</option>
+ <option value="sedentary">Sedentary</option>
+ <option value="light">Light Active</option>
+ <option value="moderate">Moderately Active</option>
+ <option value="active">Active</option>
+ <option value="very_active">Very Active</option>
  </select>
  </div>
  </div>
 
- <div className="space-y-4 pt-4 border-t border-border">
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-semibold">Targets</h2>
- <div className="flex items-center">
+ <div className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent">
+ <div className="flex items-center justify-between mb-2">
+ <h2 className="text-lg font-bold">Targets</h2>
+ <div className="flex items-center gap-2 bg-bg px-3 py-1.5 rounded-xl">
  <input
  id="manual-targets"
  type="checkbox"
- className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-border rounded"
+ className="h-4 w-4 text-primary focus:ring-primary border-transparent rounded bg-surface shadow-sm"
  checked={settings.manualTargets}
  onChange={handleManualTargetChange}
  />
- <label htmlFor="manual-targets"className="ml-2 block text-sm text-text">
+ <label htmlFor="manual-targets"className="block text-xs font-bold text-text">
  Manual Override
  </label>
  </div>
  </div>
 
 {settings.manualTargets && (
- <div className="space-y-2">
+ <div className="space-y-3">
  <div className="flex gap-2">
- <button onClick={handleSetTargetFromFormula} className="flex-1 py-1.5 px-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-xs font-medium rounded border border-purple-200 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
- Auto from Formula
+ <button onClick={handleSetTargetFromFormula} className="flex-1 py-2 px-2 bg-bg text-text text-xs font-bold rounded-xl transition-colors hover:bg-surface-hover">
+ Standard Formula
  </button>
- <button onClick={handleSetTargetFromTDEE} className="flex-1 py-1.5 px-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 text-xs font-medium rounded border border-indigo-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
- Auto from Real TDEE
+ <button onClick={handleSetTargetFromTDEE} className="flex-1 py-2 px-2 bg-bg text-text text-xs font-bold rounded-xl transition-colors hover:bg-surface-hover">
+ Real TDEE
  </button>
  {settings.weightGoal && (
  <button
  onClick={() => setShowGoalCalculator(!showGoalCalculator)}
- className={`flex-1 py-1.5 px-2 text-xs font-medium rounded border transition-colors ${showGoalCalculator ? 'bg-pink-100 text-pink-800 border-pink-300' : 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100'}`}
+ className={`flex-1 py-2 px-2 text-xs font-bold rounded-xl transition-colors ${showGoalCalculator ? 'bg-primary text-black' : 'bg-bg text-text hover:bg-surface-hover'}`}
  >
  Calc from Goal
  </button>
@@ -418,26 +418,26 @@ const handleCalculateFromGoal = () => {
  </div>
 
  {settings.weightGoal && showGoalCalculator && (
- <div className="p-3 bg-pink-50 border border-pink-100 rounded-lg text-sm space-y-3">
- <p className="font-medium text-pink-800 text-xs uppercase tracking-wide">Goal Calculator</p>
+ <div className="p-4 bg-bg rounded-2xl space-y-3">
+ <p className="font-bold text-text text-xs uppercase tracking-widest">Goal Calculator</p>
 
  <div className="grid grid-cols-2 gap-3">
  <div>
- <label className="block text-xs font-medium text-pink-700 mb-1">Base TDEE on:</label>
+ <label className="block text-xs font-bold text-text mb-1">Base TDEE on:</label>
  <select
- className="block w-full rounded border-pink-200 shadow-sm p-1.5 text-xs bg-surface focus:border-pink-500 focus:ring-pink-500"
+ className="block w-full rounded-xl border-transparent shadow-sm p-2 text-xs bg-surface font-medium focus:border-primary focus:ring-0"
  value={tdeeSource}
  onChange={(e) => setTdeeSource(e.target.value as 'formula' | 'real')}
  >
- <option value="formula">Standard Formula</option>
+ <option value="formula">Formula</option>
  <option value="real">Real TDEE</option>
  </select>
  </div>
 
  <div>
- <label className="block text-xs font-medium text-pink-700 mb-1">Calculate from:</label>
+ <label className="block text-xs font-bold text-text mb-1">Calculate from:</label>
  <select
- className="block w-full rounded border-pink-200 shadow-sm p-1.5 text-xs bg-surface focus:border-pink-500 focus:ring-pink-500"
+ className="block w-full rounded-xl border-transparent shadow-sm p-2 text-xs bg-surface font-medium focus:border-primary focus:ring-0"
  value={goalTimeline}
  onChange={(e) => setGoalTimeline(e.target.value as 'current' | 'start')}
  >
@@ -449,7 +449,7 @@ const handleCalculateFromGoal = () => {
 
  <button
  onClick={handleCalculateFromGoal}
- className="w-full py-1.5 bg-pink-600 text-white font-medium rounded hover:bg-pink-700 text-xs transition-colors"
+ className="w-full py-2 bg-text text-surface font-bold rounded-xl hover:opacity-80 text-xs transition-opacity"
  >
  Apply Goal Target
  </button>
@@ -459,57 +459,57 @@ const handleCalculateFromGoal = () => {
  )}
 
  <div className="relative">
- <div className="flex items-center gap-2 mb-1">
- <label className="block text-sm font-medium text-text">Daily Calories (kcal)</label>
+ <div className="flex items-center gap-2 mb-2 mt-2">
+ <label className="block text-sm font-bold text-text">Daily Calories (kcal)</label>
  {settings.manualTargets && settings.weightGoal && (
  <div className="relative flex items-center">
  <button
  type="button"
  onClick={() => setShowInfoTooltip(!showInfoTooltip)}
  onBlur={() => setShowInfoTooltip(false)}
- className="p-1 rounded-full hover:bg-purple-50 dark:hover:bg-purple-900/30 focus:outline-none"
+ className="p-1 rounded-full hover:bg-surface focus:outline-none"
  >
- <Info size={16} className="text-purple-500 cursor-pointer"/>
+ <Info size={16} className="text-text-muted cursor-pointer"/>
  </button>
  {showInfoTooltip && (
- <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-4 bg-surface text-text text-xs rounded-lg shadow-xl z-10 whitespace-normal">
- <p className="font-semibold mb-2 text-sm border-b border-border pb-1">Target Calculation</p>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-4 bg-text text-surface text-xs rounded-2xl shadow-xl z-10 whitespace-normal">
+ <p className="font-bold mb-2 text-sm border-b border-surface/20 pb-2">Target Calculation</p>
  <ul className="space-y-2">
  <li className="flex justify-between">
- <span className="text-text-muted">Base TDEE:</span>
- <span className="font-medium">{
+ <span className="opacity-80">Base TDEE:</span>
+ <span className="font-bold">{
  tdeeSource === 'formula'
  ? calculateTargets(settings.gender, settings.weight, settings.height, settings.age, settings.activityLevel).targetCalories
  : (calculateTDEE(useAppStore.getState().dailyLogs, 30)?.tdee || 'Unknown')
  } kcal</span>
  </li>
  <li className="flex justify-between">
- <span className="text-text-muted">Goal:</span>
- <span className="font-medium">Lose {
+ <span className="opacity-80">Goal:</span>
+ <span className="font-bold">Lose {
  goalTimeline === 'start'
  ? (Number(settings.weightGoal.initialWeight) - Number(settings.weightGoal.targetWeight)).toFixed(1)
  : (Number(settings.weight) - Number(settings.weightGoal.targetWeight)).toFixed(1)
  } kg</span>
  </li>
  <li className="flex justify-between">
- <span className="text-text-muted">Total Deficit:</span>
- <span className="font-medium">{
+ <span className="opacity-80">Total Deficit:</span>
+ <span className="font-bold">{
  Math.round((goalTimeline === 'start'
  ? (Number(settings.weightGoal.initialWeight) - Number(settings.weightGoal.targetWeight))
  : (Number(settings.weight) - Number(settings.weightGoal.targetWeight))) * 7700)
  } kcal</span>
  </li>
  <li className="flex justify-between">
- <span className="text-text-muted">Timeline:</span>
- <span className="font-medium">{
+ <span className="opacity-80">Timeline:</span>
+ <span className="font-bold">{
  goalTimeline === 'start'
  ? differenceInDays(new Date(settings.weightGoal.targetDate), new Date(settings.weightGoal.startDate))
  : differenceInDays(new Date(settings.weightGoal.targetDate), new Date())
  } days</span>
  </li>
- <li className="flex justify-between text-purple-300 pt-1 border-t border-border">
- <span>Daily Deficit:</span>
- <span className="font-medium">{
+ <li className="flex justify-between text-primary pt-2 border-t border-surface/20 mt-1">
+ <span className="font-bold">Daily Deficit:</span>
+ <span className="font-black">{
  Math.round(((goalTimeline === 'start'
  ? (Number(settings.weightGoal.initialWeight) - Number(settings.weightGoal.targetWeight))
  : (Number(settings.weight) - Number(settings.weightGoal.targetWeight))) * 7700) / (goalTimeline === 'start'
@@ -518,7 +518,7 @@ const handleCalculateFromGoal = () => {
  } kcal/day</span>
  </li>
  </ul>
- <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 border-8 border-transparent border-t-text"></div>
  </div>
  )}
  </div>
@@ -527,39 +527,39 @@ const handleCalculateFromGoal = () => {
  <input
  type="number"
  disabled={!settings.manualTargets}
- className="block w-full rounded-md border-border shadow-sm p-2 border disabled:bg-surface-hover focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium disabled:opacity-50 focus:border-primary focus:ring-0"
  value={settings.targetCalories}
  onChange={(e) => handleProfileChange('targetCalories', e.target.value === '' ? '' : Number(e.target.value))}
  />
  </div>
 
- <div className="grid grid-cols-3 gap-4">
+ <div className="grid grid-cols-3 gap-3">
  <div>
- <label className="block text-sm font-medium text-text">Protein (g)</label>
+ <label className="block text-xs font-bold text-text mb-2 text-center">Protein (g)</label>
  <input
  type="number"
  disabled={!settings.manualTargets}
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border disabled:bg-surface-hover focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 text-center font-medium disabled:opacity-50 focus:border-primary focus:ring-0"
  value={settings.targetProtein}
  onChange={(e) => handleProfileChange('targetProtein', e.target.value === '' ? '' : Number(e.target.value))}
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Carbs (g)</label>
+ <label className="block text-xs font-bold text-text mb-2 text-center">Carbs (g)</label>
  <input
  type="number"
  disabled={!settings.manualTargets}
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border disabled:bg-surface-hover focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 text-center font-medium disabled:opacity-50 focus:border-primary focus:ring-0"
  value={settings.targetCarbs}
  onChange={(e) => handleProfileChange('targetCarbs', e.target.value === '' ? '' : Number(e.target.value))}
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Fat (g)</label>
+ <label className="block text-xs font-bold text-text mb-2 text-center">Fat (g)</label>
  <input
  type="number"
  disabled={!settings.manualTargets}
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border disabled:bg-surface-hover focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 text-center font-medium disabled:opacity-50 focus:border-primary focus:ring-0"
  value={settings.targetFat}
  onChange={(e) => handleProfileChange('targetFat', e.target.value === '' ? '' : Number(e.target.value))}
  />
@@ -567,25 +567,25 @@ const handleCalculateFromGoal = () => {
  </div>
  </div>
 
- <div className="space-y-4 pt-4 border-t border-border">
- <div className="flex items-center justify-between">
- <h2 className="text-xl font-semibold text-text">Weight Goal</h2>
+ <div className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent">
+ <div className="flex items-center justify-between mb-2">
+ <h2 className="text-lg font-bold text-text">Weight Goal</h2>
  <button
  onClick={() => setShowGoalForm(!showGoalForm)}
- className="text-sm text-purple-600 font-medium hover:text-purple-700"
+ className="text-xs text-text bg-bg px-3 py-1.5 rounded-xl font-bold hover:bg-surface-hover transition-colors"
  >
  {showGoalForm ? 'Cancel' : settings.weightGoal ? 'Edit Goal' : 'Set Goal'}
  </button>
  </div>
 
  {settings.weightGoal && !showGoalForm && (
- <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 p-4 rounded-xl flex items-center gap-4">
- <div className="p-3 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-full">
- <Target size={24} />
+ <div className="bg-bg p-4 rounded-2xl flex items-center gap-4">
+ <div className="p-3 bg-surface text-text rounded-xl shadow-sm">
+ <Target size={24} strokeWidth={2.5}/>
  </div>
  <div className="flex-1">
- <p className="font-semibold text-text">Target: {settings.weightGoal.targetWeight} kg</p>
- <p className="text-sm text-text-muted">
+ <p className="font-bold text-text">Target: {settings.weightGoal.targetWeight} kg</p>
+ <p className="text-xs text-text-muted font-medium mt-1">
  From {settings.weightGoal.initialWeight} kg ({settings.weightGoal.startDate}) to {settings.weightGoal.targetDate}
  </p>
  </div>
@@ -593,57 +593,57 @@ const handleCalculateFromGoal = () => {
  )}
 
  {showGoalForm && (
- <div className="bg-bg border border-border p-4 rounded-xl space-y-4">
- <div className="grid grid-cols-2 gap-4">
+ <div className="bg-bg p-5 rounded-2xl space-y-4">
+ <div className="grid grid-cols-2 gap-3">
  <div>
- <label className="block text-sm font-medium text-text">Initial Weight (kg)</label>
+ <label className="block text-xs font-bold text-text mb-1">Initial (kg)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-xl bg-surface border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={goalForm.initialWeight}
  onChange={(e) => setGoalForm({...goalForm, initialWeight: e.target.value === '' ? '' : Number(e.target.value)})}
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Target Weight (kg)</label>
+ <label className="block text-xs font-bold text-text mb-1">Target (kg)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-xl bg-surface border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={goalForm.targetWeight}
  onChange={(e) => setGoalForm({...goalForm, targetWeight: e.target.value === '' ? '' : Number(e.target.value)})}
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Start Date</label>
+ <label className="block text-xs font-bold text-text mb-1">Start Date</label>
  <input
  type="date"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-xl bg-surface border-transparent shadow-sm p-3 font-medium text-sm focus:border-primary focus:ring-0"
  value={goalForm.startDate}
  onChange={(e) => setGoalForm({...goalForm, startDate: e.target.value})}
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Target Date</label>
+ <label className="block text-xs font-bold text-text mb-1">Target Date</label>
  <input
  type="date"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-xl bg-surface border-transparent shadow-sm p-3 font-medium text-sm focus:border-primary focus:ring-0"
  value={goalForm.targetDate}
  onChange={(e) => setGoalForm({...goalForm, targetDate: e.target.value})}
  />
  </div>
  </div>
- <div className="flex gap-2 justify-end pt-2">
+ <div className="flex gap-2 pt-2">
  {settings.weightGoal && (
  <button
  onClick={handleRemoveGoal}
- className="px-4 py-2 text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+ className="flex-1 py-3 bg-[#FFF5F5] text-red-500 font-bold hover:bg-red-50 rounded-xl transition-colors"
  >
- Remove Goal
+ Remove
  </button>
  )}
  <button
  onClick={handleSaveGoal}
- className="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700"
+ className="flex-1 py-3 bg-text text-surface font-bold rounded-xl hover:opacity-80 transition-opacity"
  >
  Save Goal
  </button>
@@ -652,29 +652,29 @@ const handleCalculateFromGoal = () => {
  )}
  </div>
 
- <div className="space-y-4 pt-4 border-t border-border pb-10">
- <h2 className="text-xl font-semibold text-text">Data Management</h2>
- <p className="text-sm text-text-muted">
- Export your daily logs and weight history to a CSV file, import from an existing CSV, or reset all local data.
+ <div className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent">
+ <h2 className="text-lg font-bold text-text mb-2">Data Management</h2>
+ <p className="text-sm text-text-muted font-medium mb-4">
+ Export your daily logs and weight history, import from an existing CSV, or reset all local data.
  </p>
 
- <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-medium rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors border border-purple-200 cursor-pointer mb-4">
- <ImageIcon size={20} />
+ <label className="flex items-center justify-center w-full gap-3 py-4 px-4 bg-primary text-black font-black rounded-2xl shadow-[0_4px_14px_rgba(197,248,42,0.4)] hover:opacity-90 transition-all cursor-pointer mb-4">
+ <ImageIcon size={20} strokeWidth={2.5}/>
  {parsingImage ? 'Parsing...' : 'Parse from Image'}
  <input type="file"accept="image/*"multiple onChange={handleImageUpload} className="hidden"disabled={parsingImage} />
  </label>
 
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-2 gap-3">
  <button
  onClick={exportToCSV}
- className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-medium rounded-xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors border border-green-200"
+ className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-bg text-text font-bold rounded-xl hover:bg-surface-hover transition-colors"
  >
- <Download size={20} />
+ <Download size={20} strokeWidth={2.5}/>
  Export
  </button>
 
- <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-medium rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors border border-blue-200 cursor-pointer">
- <Upload size={20} />
+ <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-bg text-text font-bold rounded-xl hover:bg-surface-hover transition-colors cursor-pointer">
+ <Upload size={20} strokeWidth={2.5}/>
  Import
  <input type="file"accept=".csv,text/csv,application/csv,application/x-csv,text/comma-separated-values,text/x-csv,text/x-comma-separated-values,application/vnd.ms-excel"onChange={handleImport} className="hidden"/>
  </label>
@@ -682,9 +682,9 @@ const handleCalculateFromGoal = () => {
 
  <button
  onClick={handleReset}
- className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-medium rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-200 mt-4"
+ className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-[#FFF5F5] text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors mt-4"
  >
- <Trash2 size={20} />
+ <Trash2 size={20} strokeWidth={2.5}/>
  Reset All Data
  </button>
  </div>

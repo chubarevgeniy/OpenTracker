@@ -105,49 +105,49 @@ export default function Search() {
  }
 
  return (
- <div className="flex flex-col h-full bg-bg">
- <div className="p-4 bg-surface shadow-sm z-10 sticky top-0">
- <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+ <div className="flex flex-col h-full bg-bg pb-24">
+ <div className="p-4 bg-bg z-10 sticky top-0">
+ <form onSubmit={handleSearch} className="flex gap-3 mb-6">
  <div className="relative flex-1">
  <input
  type="text"
  placeholder="Search food..."
  value={query}
  onChange={(e) => setQuery(e.target.value)}
- className="w-full pl-10 pr-4 py-2 bg-surface-hover text-text border-transparent rounded-xl focus:border-purple-500 focus:bg-surface focus:ring-0"
+ className="w-full pl-12 pr-4 py-3 bg-surface text-text font-medium border-transparent shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-2xl focus:border-primary focus:ring-0"
  />
- <SearchIcon className="absolute left-3 top-2.5 text-text-muted"size={20} />
+ <SearchIcon className="absolute left-4 top-3.5 text-text-muted"size={20} strokeWidth={2.5} />
  </div>
  <button
  type="button"
  onClick={() => setShowScanner(!showScanner)}
- className="p-2 bg-surface-hover text-text-muted rounded-xl hover:bg-border"
+ className="px-4 py-3 bg-text text-surface rounded-2xl shadow-sm hover:opacity-80 transition-opacity"
  >
- <Camera size={24} />
+ <Camera size={24} strokeWidth={2.5} />
  </button>
  </form>
 
- <div className="flex gap-4 border-b">
+ <div className="flex bg-surface p-1.5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
  <button
- className={`pb-2 text-sm font-medium ${activeTab === 'search' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted hover:text-text'}`}
+ className={`flex-1 py-2 text-xs font-bold rounded-xl transition-colors ${activeTab === 'search' ? 'bg-bg-alt text-text' : 'text-text-muted hover:text-text'}`}
  onClick={() => setActiveTab('search')}
  >
  Search
  </button>
  <button
- className={`pb-2 text-sm font-medium ${activeTab === 'recent' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted'}`}
+ className={`flex-1 py-2 text-xs font-bold rounded-xl transition-colors ${activeTab === 'recent' ? 'bg-bg-alt text-text' : 'text-text-muted'}`}
  onClick={() => setActiveTab('recent')}
  >
  Recent
  </button>
  <button
- className={`pb-2 text-sm font-medium ${activeTab === 'frequent' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted'}`}
+ className={`flex-1 py-2 text-xs font-bold rounded-xl transition-colors ${activeTab === 'frequent' ? 'bg-bg-alt text-text' : 'text-text-muted'}`}
  onClick={() => setActiveTab('frequent')}
  >
  Frequent
  </button>
  <button
- className={`pb-2 text-sm font-medium ${activeTab === 'custom' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted'}`}
+ className={`flex-1 py-2 text-xs font-bold rounded-xl transition-colors ${activeTab === 'custom' ? 'bg-bg-alt text-text' : 'text-text-muted'}`}
  onClick={() => setActiveTab('custom')}
  >
  Custom
@@ -155,7 +155,7 @@ export default function Search() {
  </div>
  </div>
 
- <div className="p-4 flex-1 overflow-y-auto">
+ <div className="px-4 flex-1 overflow-y-auto">
  {showScanner && (
  <div className="mb-6">
  <Scanner onScan={handleScan} />
@@ -163,25 +163,25 @@ export default function Search() {
  )}
 
  {loading ? (
- <div className="text-center py-8 text-text-muted">Searching...</div>
+ <div className="text-center py-8 text-text-muted font-medium">Searching...</div>
  ) : (
  <div className="space-y-3">
  {displayList.map((item) => (
  <button
  key={item.id}
  onClick={() => setSelectedFood(item)}
- className="w-full text-left bg-surface p-3 rounded-xl shadow-sm border border-border flex items-center gap-4 hover:border-purple-200 transition-colors"
+ className="w-full text-left bg-surface p-4 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center gap-4 hover:bg-surface-hover transition-colors"
  >
  {item.image_url ? (
- <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg"/>
+ <img src={item.image_url} alt={item.name} className="w-14 h-14 object-cover rounded-2xl shadow-sm"/>
  ) : (
- <div className="w-12 h-12 bg-surface-hover rounded-lg flex items-center justify-center text-text-muted">
- <SearchIcon size={20} />
+ <div className="w-14 h-14 bg-bg-alt rounded-2xl flex items-center justify-center text-text-muted">
+ <SearchIcon size={24} strokeWidth={2.5} />
  </div>
  )}
  <div className="flex-1 min-w-0">
- <p className="font-medium text-text truncate">{item.name}</p>
- <p className="text-xs text-text-muted truncate">{item.brand || 'Generic'} • {Math.round(item.calories)} kcal / 100g</p>
+ <p className="font-bold text-text truncate text-base">{item.name}</p>
+ <p className="text-sm font-medium text-text-muted truncate">{item.brand || 'Generic'} • {Math.round(item.calories)} kcal</p>
  </div>
  </button>
  ))}
@@ -195,60 +195,64 @@ export default function Search() {
  )}
 
  {activeTab === 'custom' && (
- <form onSubmit={handleCustomFoodSubmit} className="space-y-4 bg-surface p-4 rounded-xl shadow-sm">
+ <form onSubmit={handleCustomFoodSubmit} className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] mt-2">
  <div>
- <label className="block text-sm font-medium text-text">Food Name</label>
+ <label className="block text-sm font-bold text-text mb-1">Food Name</label>
  <input
  type="text"
  required
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={customFood.name}
  onChange={(e) => setCustomFood({ ...customFood, name: e.target.value })}
  placeholder="e.g. Homemade Sandwich"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Calories (per 100g or 1 serving)</label>
+ <label className="block text-sm font-bold text-text mb-1">Calories (per 100g / serving)</label>
  <input
  type="number"
  required
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 font-medium focus:border-primary focus:ring-0"
  value={customFood.calories}
  onChange={(e) => setCustomFood({ ...customFood, calories: e.target.value })}
+ placeholder="0"
  />
  </div>
- <div className="grid grid-cols-3 gap-4">
+ <div className="grid grid-cols-3 gap-3">
  <div>
- <label className="block text-sm font-medium text-text">Protein (g)</label>
+ <label className="block text-xs font-bold text-text mb-1 text-center">Protein (g)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 text-center font-medium focus:border-primary focus:ring-0"
  value={customFood.protein}
  onChange={(e) => setCustomFood({ ...customFood, protein: e.target.value })}
+ placeholder="0"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Carbs (g)</label>
+ <label className="block text-xs font-bold text-text mb-1 text-center">Carbs (g)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 text-center font-medium focus:border-primary focus:ring-0"
  value={customFood.carbs}
  onChange={(e) => setCustomFood({ ...customFood, carbs: e.target.value })}
+ placeholder="0"
  />
  </div>
  <div>
- <label className="block text-sm font-medium text-text">Fat (g)</label>
+ <label className="block text-xs font-bold text-text mb-1 text-center">Fat (g)</label>
  <input
  type="number"
- className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+ className="block w-full rounded-2xl bg-bg border-transparent shadow-sm p-3 text-center font-medium focus:border-primary focus:ring-0"
  value={customFood.fat}
  onChange={(e) => setCustomFood({ ...customFood, fat: e.target.value })}
+ placeholder="0"
  />
  </div>
  </div>
  <button
  type="submit"
- className="w-full py-2 px-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition-colors"
+ className="w-full py-4 mt-2 bg-primary text-black font-bold rounded-2xl hover:opacity-90 transition-opacity"
  >
  Add Custom Food
  </button>

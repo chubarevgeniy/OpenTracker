@@ -7,14 +7,14 @@ import { Link, useSearchParams } from 'react-router-dom'
 const ProgressBar = ({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
  const percentage = Math.min(100, Math.round((current / (target || 1)) * 100))
  return (
- <div className="flex-1">
+ <div className="w-full">
  <div className="flex justify-between text-xs mb-1">
- <span className="font-medium text-text">{label}</span>
+ <span className="font-semibold text-text">{label}</span>
  <span className="text-text-muted">{Math.round(current)} / {target}g</span>
  </div>
- <div className="w-full bg-border rounded-full h-2">
+ <div className="w-full bg-bg-alt rounded-full h-3">
  <div
- className={`h-2 rounded-full ${colorClass}`}
+ className={`h-3 rounded-full ${colorClass}`}
  style={{ width: `${percentage}%` }}
  ></div>
  </div>
@@ -45,17 +45,17 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  }
 
  return (
- <div className="bg-surface p-4 rounded-xl shadow-sm border border-border mb-4">
- <div className="flex justify-between items-center mb-3">
+ <div className="bg-surface p-5 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent mb-4">
+ <div className="flex justify-between items-center mb-4">
  <div>
- <h3 className="font-semibold text-lg text-text">{title}</h3>
- <span className="text-sm text-text-muted">{Math.round(mealCalories)} kcal</span>
+ <h3 className="font-bold text-xl text-text capitalize">{title}</h3>
+ <span className="text-sm text-text-muted font-medium">{Math.round(mealCalories)} kcal</span>
  </div>
  <Link
  to={`/search?meal=${mealType}&date=${today}`}
- className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/40"
+ className="p-2 bg-text text-surface rounded-2xl hover:opacity-80 transition-opacity shadow-sm"
  >
- <Plus size={20} />
+ <Plus size={20} strokeWidth={2.5} />
  </Link>
  </div>
 
@@ -205,15 +205,15 @@ export default function Dashboard() {
 
  return (
  <div className="p-4 space-y-6 bg-bg min-h-[100%] pb-8">
- <header className="flex flex-col gap-4">
- <div className="flex justify-between items-center">
- <h1 className="text-2xl font-bold">
- {isToday(selectedDateObj) ? 'Today' : format(selectedDateObj, 'MMM d, yyyy')}
- </h1>
- <div className="flex items-center gap-2 bg-surface rounded-xl shadow-sm border border-border p-1">
- <button onClick={goToPreviousDay} className="p-1.5 hover:bg-surface-hover rounded-lg text-text-muted">
- <ChevronLeft size={20} />
+ <header className="flex justify-center pt-2">
+ <div className="inline-flex items-center gap-3 bg-surface rounded-full shadow-sm px-4 py-2">
+ <button onClick={goToPreviousDay} className="p-1 hover:bg-surface-hover rounded-full text-text-muted transition-colors">
+ <ChevronLeft size={18} strokeWidth={2.5} />
  </button>
+ <div className="relative flex items-center justify-center">
+ <span className="text-sm font-bold w-[90px] text-center pointer-events-none">
+ {isToday(selectedDateObj) ? 'Today' : format(selectedDateObj, 'MMM d, yyyy')}
+ </span>
  <input
  type="date"
  value={selectedDate}
@@ -222,35 +222,36 @@ export default function Dashboard() {
  handleDateChange(new Date(e.target.value + 'T00:00:00'))
  }
  }}
- className="bg-transparent border-none text-sm font-medium text-text focus:ring-0 cursor-pointer p-0 w-[110px]"
+ className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
  />
- <button onClick={goToNextDay} className="p-1.5 hover:bg-surface-hover rounded-lg text-text-muted">
- <ChevronRight size={20} />
- </button>
  </div>
+ <button onClick={goToNextDay} className="p-1 hover:bg-surface-hover rounded-full text-text-muted transition-colors">
+ <ChevronRight size={18} strokeWidth={2.5} />
+ </button>
  </div>
  </header>
 
  {/* Weight Input */}
- <div className="bg-surface p-4 rounded-xl shadow-sm border border-border flex items-center gap-4">
- <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full">
- <Scale size={20} />
+ <div className="bg-surface p-5 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-3">
+ <div className="flex items-center gap-2">
+ <Scale size={18} className="text-text-muted" strokeWidth={2.5} />
+ <span className="font-bold text-text">Today's Weight</span>
  </div>
- <form onSubmit={handleWeightSubmit} className="flex-1 flex gap-2">
- <div className="flex-1 flex items-center border border-border rounded-lg px-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 bg-bg">
+ <form onSubmit={handleWeightSubmit} className="flex gap-3">
+ <div className="flex-1 flex items-center bg-bg rounded-2xl px-4 py-2 border-2 border-transparent focus-within:border-primary transition-colors">
  <input
  type="number"
  step="0.1"
  value={weightInput}
  onChange={(e) => setWeightInput(e.target.value)}
- className="w-full bg-transparent border-none focus:ring-0 p-2 text-text"
- placeholder="Weight"
+ className="w-full bg-transparent border-none focus:ring-0 p-0 text-text font-bold text-lg"
+ placeholder="0.0"
  />
- <span className="text-text-muted text-sm font-medium">kg</span>
+ <span className="text-text-muted font-bold ml-2">kg</span>
  </div>
  <button
  type="submit"
- className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+ className="px-6 py-2 bg-primary text-black font-bold rounded-2xl hover:opacity-90 transition-opacity"
  >
  Save
  </button>
@@ -258,37 +259,35 @@ export default function Dashboard() {
  </div>
 
  {/* Summary Card */}
- <div className="bg-surface p-5 rounded-2xl shadow-sm border border-border">
- <div className="flex flex-col items-center mb-6">
- <div className="relative w-32 h-32 flex items-center justify-center">
- {/* Simple circular progress visualization using conic-gradient */}
- <div
- className="absolute inset-0 rounded-full"
- style={{
- background: `conic-gradient(#aa3bff ${(totals.calories / Number(settings.targetCalories || 1)) * 360}deg, #f3f4f6 0deg)`
- }}
- ></div>
- <div className="absolute inset-2 bg-surface rounded-full flex flex-col items-center justify-center">
- <span className="text-2xl font-bold">{Math.round(Number(settings.targetCalories) - totals.calories)}</span>
- <span className="text-xs text-text-muted uppercase tracking-wider">Remaining</span>
- </div>
- </div>
- <div className="flex justify-between w-full mt-4 text-center px-4">
+ <div className="bg-surface p-6 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+ <div className="flex items-start gap-6">
+ <div className="flex-1 space-y-4">
  <div>
- <p className="text-text-muted text-xs">Consumed</p>
- <p className="font-semibold">{Math.round(totals.calories)}</p>
+ <h2 className="text-text font-bold text-lg">Calories</h2>
+ <div className="flex items-baseline gap-1 mt-1">
+ <span className="text-4xl font-black">{Math.round(totals.calories)}</span>
+ <span className="text-text-muted font-medium text-sm">kcal</span>
+ </div>
+ <p className="text-text-muted text-xs font-semibold uppercase tracking-wider mt-1">Eaten</p>
+ </div>
+
+ <div className="flex gap-6">
+ <div>
+ <p className="text-lg font-bold">{settings.targetCalories || 0}</p>
+ <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Target</p>
  </div>
  <div>
- <p className="text-text-muted text-xs">Target</p>
- <p className="font-semibold">{settings.targetCalories || 0}</p>
+ <p className="text-lg font-bold">{Math.max(0, Math.round(Number(settings.targetCalories) - totals.calories))}</p>
+ <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Burned</p>
  </div>
  </div>
  </div>
 
- <div className="flex gap-4">
- <ProgressBar label="Carbs"current={totals.carbs} target={Number(settings.targetCarbs)} colorClass="bg-blue-400"/>
- <ProgressBar label="Protein"current={totals.protein} target={Number(settings.targetProtein)} colorClass="bg-red-400"/>
- <ProgressBar label="Fat"current={totals.fat} target={Number(settings.targetFat)} colorClass="bg-yellow-400"/>
+ <div className="flex-1 flex flex-col justify-center space-y-5 py-2">
+ <ProgressBar label="Protein"current={totals.protein} target={Number(settings.targetProtein)} colorClass="bg-primary"/>
+ <ProgressBar label="Carbs"current={totals.carbs} target={Number(settings.targetCarbs)} colorClass="bg-orange-400"/>
+ <ProgressBar label="Fat"current={totals.fat} target={Number(settings.targetFat)} colorClass="bg-pink-400"/>
+ </div>
  </div>
  </div>
 
