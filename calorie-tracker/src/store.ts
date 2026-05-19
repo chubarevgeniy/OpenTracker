@@ -94,6 +94,7 @@ interface AppState {
 
   updateSettings: (settings: Partial<Settings>) => void
   addMealEntry: (date: string, mealType: MealType, entry: MealEntry) => void
+  updateMealEntry: (date: string, mealType: MealType, entryId: string, newAmount: number) => void
   removeMealEntry: (date: string, mealType: MealType, entryId: string) => void
   logWeight: (date: string, weight: number) => void
   addSearchHistory: (foodItem: FoodItem) => void
@@ -140,6 +141,40 @@ export const useAppStore = create<AppState>()(
                 meals: {
                   ...log.meals,
                   [mealType]: [...log.meals[mealType], entry],
+                },
+              },
+            },
+          }
+        }),
+
+      updateMealEntry: (date, mealType, entryId, newAmount) =>
+        set((state) => {
+          const log = state.dailyLogs[date]
+          if (!log) return state
+
+          const updatedMeals = log.meals[mealType].map((entry) => {
+            if (entry.id === entryId) {
+              const multiplier = newAmount / 100
+              return {
+                ...entry,
+                amount: newAmount,
+                calories: entry.foodItem.calories * multiplier,
+                protein: entry.foodItem.protein * multiplier,
+                carbs: entry.foodItem.carbs * multiplier,
+                fat: entry.foodItem.fat * multiplier,
+              }
+            }
+            return entry
+          })
+
+          return {
+            dailyLogs: {
+              ...state.dailyLogs,
+              [date]: {
+                ...log,
+                meals: {
+                  ...log.meals,
+                  [mealType]: updatedMeals,
                 },
               },
             },

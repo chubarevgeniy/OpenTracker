@@ -240,7 +240,7 @@ export default function Stats() {
             step="0.1"
             value={currentWeightInput}
             onChange={(e) => setCurrentWeightInput(e.target.value)}
-            className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="flex-1 p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Weight in kg"
           />
           <button

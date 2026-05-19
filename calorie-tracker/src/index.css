@@ -4,14 +4,30 @@
 @theme {
   --color-primary: #aa3bff;
   --color-primary-hover: #902bd9;
-  --color-bg: #ffffff;
-  --color-bg-alt: #f4f3ec;
-  --color-text: #08060d;
-  --color-text-muted: #6b6375;
-  --color-border: #e5e4e7;
+  --color-bg: var(--theme-bg);
+  --color-bg-alt: var(--theme-bg-alt);
+  --color-text: var(--theme-text);
+  --color-text-muted: var(--theme-text-muted);
+  --color-border: var(--theme-border);
 }
 
 @layer base {
+  :root {
+    --theme-bg: #ffffff;
+    --theme-bg-alt: #f4f3ec;
+    --theme-text: #08060d;
+    --theme-text-muted: #6b6375;
+    --theme-border: #e5e4e7;
+  }
+
+  .dark {
+    --theme-bg: #111827;
+    --theme-bg-alt: #030712;
+    --theme-text: #f9fafb;
+    --theme-text-muted: #9ca3af;
+    --theme-border: #1f2937;
+  }
+
   body {
     @apply bg-[var(--color-bg-alt)] text-[var(--color-text)] font-sans antialiased m-0 p-0;
   }

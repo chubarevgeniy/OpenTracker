@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
 import { format, addDays, subDays, isToday } from 'date-fns'
-import { Plus, Trash2, ChevronLeft, ChevronRight, Scale } from 'lucide-react'
+import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const ProgressBar = ({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
@@ -22,8 +22,27 @@ const ProgressBar = ({ label, current, target, colorClass }: { label: string, cu
   )
 }
 
-const MealSection = ({ title, mealType, meals, today, removeMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void }) => {
+const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
   const mealCalories = meals.reduce((sum, item) => sum + item.calories, 0)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editAmount, setEditAmount] = useState<string>('')
+
+  const handleEditClick = (entry: MealEntry) => {
+    setEditingId(entry.id)
+    setEditAmount(entry.amount.toString())
+  }
+
+  const handleSaveEdit = (entryId: string) => {
+    const amount = parseFloat(editAmount)
+    if (!isNaN(amount) && amount > 0) {
+      updateMealEntry(today, mealType, entryId, amount)
+    }
+    setEditingId(null)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingId(null)
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 mb-4">
@@ -43,22 +62,62 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry }: { title
       {meals.length > 0 ? (
         <div className="space-y-3">
           {meals.map((entry) => (
-            <div key={entry.id} className="flex justify-between items-center text-sm border-t border-gray-50 pt-2">
-              <div className="flex-1">
-                <p className="font-medium text-gray-900 dark:text-gray-100">{entry.foodItem.name}</p>
-                <p className="text-gray-500 dark:text-gray-400 text-xs">
-                  {entry.amount}g • {entry.foodItem.brand || 'Generic'}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-semibold text-gray-900 dark:text-gray-100">{Math.round(entry.calories)} kcal</span>
-                <button
-                  onClick={() => removeMealEntry(today, mealType, entry.id)}
-                  className="text-red-400 hover:text-red-600"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
+            <div key={entry.id} className="flex justify-between items-center text-sm border-t border-gray-50 dark:border-gray-700 pt-2">
+              {editingId === entry.id ? (
+                <div className="flex-1 flex items-center justify-between gap-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">{entry.foodItem.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="number"
+                        value={editAmount}
+                        onChange={(e) => setEditAmount(e.target.value)}
+                        className="w-20 px-2 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        autoFocus
+                      />
+                      <span className="text-gray-500 dark:text-gray-400">g</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSaveEdit(entry.id)}
+                      className="p-1.5 bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400 rounded-full hover:bg-green-200 dark:hover:bg-green-800"
+                    >
+                      <Check size={16} />
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="p-1.5 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{entry.foodItem.name}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs">
+                      {entry.amount}g • {entry.foodItem.brand || 'Generic'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{Math.round(entry.calories)} kcal</span>
+                    <button
+                      onClick={() => handleEditClick(entry)}
+                      className="text-blue-400 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-400"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => removeMealEntry(today, mealType, entry.id)}
+                      className="text-red-400 hover:text-red-600"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -76,6 +135,7 @@ export default function Dashboard() {
   const settings = useAppStore((state) => state.settings)
   const dailyLogs = useAppStore((state) => state.dailyLogs)
   const removeMealEntry = useAppStore((state) => state.removeMealEntry)
+  const updateMealEntry = useAppStore((state) => state.updateMealEntry)
   const logWeight = useAppStore((state) => state.logWeight)
 
   const log = dailyLogs[selectedDate] || {
@@ -227,10 +287,10 @@ export default function Dashboard() {
 
       {/* Meals List */}
       <div className="space-y-4">
-        <MealSection title="Breakfast" mealType="breakfast" meals={log.meals.breakfast} today={selectedDate} removeMealEntry={removeMealEntry} />
-        <MealSection title="Lunch" mealType="lunch" meals={log.meals.lunch} today={selectedDate} removeMealEntry={removeMealEntry} />
-        <MealSection title="Dinner" mealType="dinner" meals={log.meals.dinner} today={selectedDate} removeMealEntry={removeMealEntry} />
-        <MealSection title="Snacks" mealType="snack" meals={log.meals.snack} today={selectedDate} removeMealEntry={removeMealEntry} />
+        <MealSection title="Breakfast" mealType="breakfast" meals={log.meals.breakfast} today={selectedDate} removeMealEntry={removeMealEntry} updateMealEntry={updateMealEntry} />
+        <MealSection title="Lunch" mealType="lunch" meals={log.meals.lunch} today={selectedDate} removeMealEntry={removeMealEntry} updateMealEntry={updateMealEntry} />
+        <MealSection title="Dinner" mealType="dinner" meals={log.meals.dinner} today={selectedDate} removeMealEntry={removeMealEntry} updateMealEntry={updateMealEntry} />
+        <MealSection title="Snacks" mealType="snack" meals={log.meals.snack} today={selectedDate} removeMealEntry={removeMealEntry} updateMealEntry={updateMealEntry} />
       </div>
     </div>
   )

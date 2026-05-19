@@ -14,6 +14,7 @@ export default function Settings() {
 const [showGoalForm, setShowGoalForm] = useState(false)
   const [showGoalCalculator, setShowGoalCalculator] = useState(false)
   const [tdeeSource, setTdeeSource] = useState<'formula' | 'real'>('formula')
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false)
   const [goalTimeline, setGoalTimeline] = useState<'current' | 'start'>('current')
   const [goalForm, setGoalForm] = useState<WeightGoal>(
     settings.weightGoal || {
@@ -249,7 +250,7 @@ const handleCalculateFromGoal = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
           <select
-            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
             value={settings.gender}
             onChange={(e) => handleProfileChange('gender', e.target.value as Gender)}
           >
@@ -263,7 +264,7 @@ const handleCalculateFromGoal = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Age</label>
             <input
               type="number"
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
               value={settings.age}
               onChange={(e) => handleProfileChange('age', e.target.value === '' ? '' : Number(e.target.value))}
             />
@@ -272,7 +273,7 @@ const handleCalculateFromGoal = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Weight (kg)</label>
             <input
               type="number"
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
               value={settings.weight}
               onChange={(e) => handleProfileChange('weight', e.target.value === '' ? '' : Number(e.target.value))}
             />
@@ -281,7 +282,7 @@ const handleCalculateFromGoal = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Height (cm)</label>
             <input
               type="number"
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
               value={settings.height}
               onChange={(e) => handleProfileChange('height', e.target.value === '' ? '' : Number(e.target.value))}
             />
@@ -291,7 +292,7 @@ const handleCalculateFromGoal = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Activity Level</label>
           <select
-            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
             value={settings.activityLevel}
             onChange={(e) => handleProfileChange('activityLevel', e.target.value as ActivityLevel)}
           >
@@ -348,7 +349,7 @@ const handleCalculateFromGoal = () => {
                   <div>
                     <label className="block text-xs font-medium text-pink-700 mb-1">Base TDEE on:</label>
                     <select
-                      className="block w-full rounded border-pink-200 shadow-sm p-1.5 text-xs bg-white dark:bg-gray-800 focus:border-pink-500 focus:ring-pink-500"
+                      className="block w-full rounded border-pink-200 dark:border-gray-600 shadow-sm p-1.5 text-xs bg-white dark:bg-gray-700 dark:text-white focus:border-pink-500 focus:ring-pink-500"
                       value={tdeeSource}
                       onChange={(e) => setTdeeSource(e.target.value as 'formula' | 'real')}
                     >
@@ -360,7 +361,7 @@ const handleCalculateFromGoal = () => {
                   <div>
                     <label className="block text-xs font-medium text-pink-700 mb-1">Calculate from:</label>
                     <select
-                      className="block w-full rounded border-pink-200 shadow-sm p-1.5 text-xs bg-white dark:bg-gray-800 focus:border-pink-500 focus:ring-pink-500"
+                      className="block w-full rounded border-pink-200 dark:border-gray-600 shadow-sm p-1.5 text-xs bg-white dark:bg-gray-700 dark:text-white focus:border-pink-500 focus:ring-pink-500"
                       value={goalTimeline}
                       onChange={(e) => setGoalTimeline(e.target.value as 'current' | 'start')}
                     >
@@ -385,11 +386,19 @@ const handleCalculateFromGoal = () => {
           <div className="flex items-center gap-2 mb-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Daily Calories (kcal)</label>
             {settings.manualTargets && settings.weightGoal && (
-              <div className="group relative flex items-center">
-                <Info size={16} className="text-purple-500 cursor-help" />
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-72 p-4 bg-gray-900 text-white text-xs rounded-lg shadow-xl z-10 whitespace-normal">
-                  <p className="font-semibold mb-2 text-sm border-b border-gray-700 pb-1">Target Calculation</p>
-                  <ul className="space-y-2">
+              <div className="relative flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setShowInfoTooltip(!showInfoTooltip)}
+                  onBlur={() => setShowInfoTooltip(false)}
+                  className="p-1 rounded-full hover:bg-purple-50 dark:hover:bg-purple-900/30 focus:outline-none"
+                >
+                  <Info size={16} className="text-purple-500 cursor-pointer" />
+                </button>
+                {showInfoTooltip && (
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 p-4 bg-gray-900 text-white text-xs rounded-lg shadow-xl z-10 whitespace-normal">
+                    <p className="font-semibold mb-2 text-sm border-b border-gray-700 pb-1">Target Calculation</p>
+                    <ul className="space-y-2">
                     <li className="flex justify-between">
                       <span className="text-gray-400">Base TDEE:</span>
                       <span className="font-medium">{
@@ -435,13 +444,14 @@ const handleCalculateFromGoal = () => {
                   </ul>
                   <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                 </div>
+                )}
               </div>
             )}
-          </div>
+        </div>
           <input
             type="number"
             disabled={!settings.manualTargets}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 focus:border-purple-500 focus:ring-purple-500"
+            className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 dark:text-white focus:border-purple-500 focus:ring-purple-500"
             value={settings.targetCalories}
             onChange={(e) => handleProfileChange('targetCalories', e.target.value === '' ? '' : Number(e.target.value))}
           />
@@ -453,7 +463,7 @@ const handleCalculateFromGoal = () => {
             <input
               type="number"
               disabled={!settings.manualTargets}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 dark:text-white focus:border-purple-500 focus:ring-purple-500"
               value={settings.targetProtein}
               onChange={(e) => handleProfileChange('targetProtein', e.target.value === '' ? '' : Number(e.target.value))}
             />
@@ -463,7 +473,7 @@ const handleCalculateFromGoal = () => {
             <input
               type="number"
               disabled={!settings.manualTargets}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 dark:text-white focus:border-purple-500 focus:ring-purple-500"
               value={settings.targetCarbs}
               onChange={(e) => handleProfileChange('targetCarbs', e.target.value === '' ? '' : Number(e.target.value))}
             />
@@ -473,7 +483,7 @@ const handleCalculateFromGoal = () => {
             <input
               type="number"
               disabled={!settings.manualTargets}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 dark:text-white focus:border-purple-500 focus:ring-purple-500"
               value={settings.targetFat}
               onChange={(e) => handleProfileChange('targetFat', e.target.value === '' ? '' : Number(e.target.value))}
             />
@@ -513,7 +523,7 @@ const handleCalculateFromGoal = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Initial Weight (kg)</label>
                 <input
                   type="number"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={goalForm.initialWeight}
                   onChange={(e) => setGoalForm({...goalForm, initialWeight: e.target.value === '' ? '' : Number(e.target.value)})}
                 />
@@ -522,7 +532,7 @@ const handleCalculateFromGoal = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Weight (kg)</label>
                 <input
                   type="number"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={goalForm.targetWeight}
                   onChange={(e) => setGoalForm({...goalForm, targetWeight: e.target.value === '' ? '' : Number(e.target.value)})}
                 />
@@ -531,7 +541,7 @@ const handleCalculateFromGoal = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
                 <input
                   type="date"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={goalForm.startDate}
                   onChange={(e) => setGoalForm({...goalForm, startDate: e.target.value})}
                 />
@@ -540,7 +550,7 @@ const handleCalculateFromGoal = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Date</label>
                 <input
                   type="date"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={goalForm.targetDate}
                   onChange={(e) => setGoalForm({...goalForm, targetDate: e.target.value})}
                 />
