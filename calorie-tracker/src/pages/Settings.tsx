@@ -20,6 +20,9 @@ const [showGoalForm, setShowGoalForm] = useState(false)
  const [parsingImage, setParsingImage] = useState(false)
  const [parsedDataList, setParsedDataList] = useState<Array<{ date: string; calories: number; carbs: number; protein: number; fat: number }>>([])
  const [showParsedModal, setShowParsedModal] = useState(false)
+ const [showImportModal, setShowImportModal] = useState(false)
+ const [importFile, setImportFile] = useState<File | null>(null)
+ const [importOptions, setImportOptions] = useState({ weight: true, nutrition: true })
 
  const addMealEntry = useAppStore((state) => state.addMealEntry)
 
@@ -257,10 +260,19 @@ const handleCalculateFromGoal = () => {
  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
  const file = e.target.files?.[0]
  if (file) {
- importFromCSV(file)
+ setImportFile(file)
+ setShowImportModal(true)
  }
  // Reset the input value so the same file can be selected again
  e.target.value = ''
+ }
+
+ const handleConfirmImport = () => {
+ if (importFile) {
+ importFromCSV(importFile, importOptions)
+ }
+ setShowImportModal(false)
+ setImportFile(null)
  }
 
  const handleReset = () => {
@@ -676,6 +688,59 @@ const handleCalculateFromGoal = () => {
  Reset All Data
  </button>
  </div>
+
+ {showImportModal && (
+ <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+ <div className="bg-surface rounded-2xl p-6 max-w-md w-full space-y-4">
+ <h3 className="text-lg font-bold text-text">Import Options</h3>
+ <p className="text-sm text-text-muted">Select what data you want to import from the CSV file.</p>
+
+ <div className="space-y-3">
+ <label className="flex items-center gap-3 p-3 border border-border rounded-xl cursor-pointer hover:bg-surface-hover">
+ <input
+ type="checkbox"
+ className="w-5 h-5 rounded border-border text-purple-600 focus:ring-purple-500"
+ checked={importOptions.weight}
+ onChange={(e) => setImportOptions({...importOptions, weight: e.target.checked})}
+ />
+ <div>
+ <p className="font-medium text-text">Import Weight</p>
+ <p className="text-xs text-text-muted">Body weight logs</p>
+ </div>
+ </label>
+
+ <label className="flex items-center gap-3 p-3 border border-border rounded-xl cursor-pointer hover:bg-surface-hover">
+ <input
+ type="checkbox"
+ className="w-5 h-5 rounded border-border text-purple-600 focus:ring-purple-500"
+ checked={importOptions.nutrition}
+ onChange={(e) => setImportOptions({...importOptions, nutrition: e.target.checked})}
+ />
+ <div>
+ <p className="font-medium text-text">Import Nutrition</p>
+ <p className="text-xs text-text-muted">Food logs and macronutrients</p>
+ </div>
+ </label>
+ </div>
+
+ <div className="flex gap-3 pt-4">
+ <button
+ onClick={() => { setShowImportModal(false); setImportFile(null); }}
+ className="flex-1 py-2 px-4 bg-surface-hover text-text font-medium rounded-xl hover:bg-border transition-colors"
+ >
+ Cancel
+ </button>
+ <button
+ onClick={handleConfirmImport}
+ disabled={!importOptions.weight && !importOptions.nutrition}
+ className="flex-1 py-2 px-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+ >
+ Confirm
+ </button>
+ </div>
+ </div>
+ </div>
+ )}
 
  {showParsedModal && parsedDataList.length > 0 && (
  <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
