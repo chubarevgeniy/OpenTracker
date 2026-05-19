@@ -12,6 +12,10 @@ export default function Stats() {
  const settings = useAppStore((state) => state.settings)
  const settingsWeight = settings.weight || 0
 
+ const sortedDailyLogs = useMemo(() => {
+  return Object.values(dailyLogs).sort((a, b) => a.date.localeCompare(b.date));
+ }, [dailyLogs])
+
  const [timeRange, setTimeRange] = useState<TimeRange>(30)
  const [averaging, setAveraging] = useState<'auto' | 'daily' | 'weekly' | 'monthly'>('auto')
  const [excludeZeroes, setExcludeZeroes] = useState(true)
@@ -49,7 +53,7 @@ export default function Stats() {
  })
  }
 
-      const historicalTdeeCalc = calculateTDEE(dailyLogs, 14, date)
+      const historicalTdeeCalc = calculateTDEE(sortedDailyLogs, 14, date)
 
  data.push({
  dateObj: date,
@@ -182,11 +186,11 @@ export default function Stats() {
  }
 
  return data
- }, [dailyLogs, timeRange, settingsWeight, settings.weightGoal, averaging, excludeZeroes])
+ }, [dailyLogs, sortedDailyLogs, timeRange, settingsWeight, settings.weightGoal, averaging, excludeZeroes])
 
  const tdeeCalc = useMemo(() => {
- return calculateTDEE(dailyLogs, tdeeRange)
- }, [dailyLogs, tdeeRange])
+ return calculateTDEE(sortedDailyLogs, tdeeRange)
+ }, [sortedDailyLogs, tdeeRange])
 
  return (
  <div className="p-4 space-y-6 bg-bg min-h-screen pb-24">
