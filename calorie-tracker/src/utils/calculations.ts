@@ -1,13 +1,13 @@
 import { differenceInDays } from 'date-fns'
 import type { DailyLog } from '../store'
 
-export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: number | 'all') {
- const today = new Date()
-
+export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: number | 'all', endDate: Date = new Date()) {
  // Find earliest weight within range days
  const logsInPeriod = Object.values(dailyLogs).filter(log => {
  const date = new Date(log.date)
- return tdeeRange === 'all' ? true : differenceInDays(today, date) <= tdeeRange
+    // Ignore dates in the future relative to endDate
+    if (date > endDate) return false
+    return tdeeRange === 'all' ? true : differenceInDays(endDate, date) <= tdeeRange
  }).sort((a, b) => a.date.localeCompare(b.date))
 
  if (logsInPeriod.length < 5) return null // Need more data
@@ -26,7 +26,8 @@ export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: nu
  }
  })
 
- if (daysWithFood < 14) return null // Need at least 14 days of good food logging
+  const requiredDays = tdeeRange === 'all' ? 14 : Math.min(14, Math.floor(tdeeRange * 0.5))
+  if (daysWithFood < requiredDays) return null // Need minimum days of good food logging
 
  const avgDailyIntake = totalCalories / daysWithFood
 
@@ -40,7 +41,7 @@ export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: nu
  new Date(lastWeightLog.date),
  new Date(firstWeightLog.date)
  )
- if (daysBetweenWeights < 14) return null
+  if (daysBetweenWeights < requiredDays) return null
 
  const weightDelta = lastWeightLog.weight! - firstWeightLog.weight!
 
