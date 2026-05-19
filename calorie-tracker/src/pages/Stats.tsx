@@ -9,23 +9,13 @@ type TimeRange = 7 | 30 | 90 | 180 | 365 | 'all' | 'goal'
 
 export default function Stats() {
  const dailyLogs = useAppStore((state) => state.dailyLogs)
- const logWeight = useAppStore((state) => state.logWeight)
  const settings = useAppStore((state) => state.settings)
  const settingsWeight = settings.weight || 0
 
- const [currentWeightInput, setCurrentWeightInput] = useState(settingsWeight.toString())
  const [timeRange, setTimeRange] = useState<TimeRange>(30)
  const [averaging, setAveraging] = useState<'auto' | 'daily' | 'weekly' | 'monthly'>('auto')
  const [excludeZeroes, setExcludeZeroes] = useState(true)
  const [tdeeRange, setTdeeRange] = useState<30 | 60 | 90 | 'all'>(30)
-
- const handleLogWeight = () => {
- const w = parseFloat(currentWeightInput)
- if (!isNaN(w) && w > 0) {
- logWeight(format(new Date(), 'yyyy-MM-dd'), w)
- alert('Weight logged successfully!')
- }
- }
 
  const chartData = useMemo(() => {
  const data = []
@@ -248,28 +238,6 @@ export default function Stats() {
  </label>
  </div>
  </header>
-
- <div className="bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-3 border border-transparent">
- <div className="flex items-center gap-2 mb-1">
- <span className="font-bold text-lg text-text">Log Weight</span>
- </div>
- <div className="flex gap-3">
- <input
- type="number"
- step="0.1"
- value={currentWeightInput}
- onChange={(e) => setCurrentWeightInput(e.target.value)}
- className="flex-1 p-4 bg-bg border-2 border-transparent rounded-2xl focus:ring-0 focus:border-primary text-xl font-black transition-colors"
- placeholder="Weight in kg"
- />
- <button
- onClick={handleLogWeight}
- className="px-8 bg-primary text-black font-black text-lg rounded-2xl hover:opacity-90 shadow-[0_4px_14px_rgba(197,248,42,0.4)] transition-all"
- >
- Save
- </button>
- </div>
- </div>
 
  <div className="bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent h-80 flex flex-col">
  <h2 className="text-lg font-bold mb-4 text-text">Calories Consumed</h2>

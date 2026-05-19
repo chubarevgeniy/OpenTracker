@@ -278,7 +278,7 @@ export default function Dashboard() {
  </div>
  <div>
  <p className="text-lg font-bold">{Math.max(0, Math.round(Number(settings.targetCalories) - totals.calories))}</p>
- <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Burned</p>
+              <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Left</p>
  </div>
  </div>
  </div>
