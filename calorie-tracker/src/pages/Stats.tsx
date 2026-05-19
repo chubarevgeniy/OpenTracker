@@ -182,14 +182,14 @@ export default function Stats() {
   }, [dailyLogs, tdeeRange])
 
   return (
-    <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen pb-24">
+    <div className="p-4 space-y-6 bg-bg min-h-screen pb-24">
       <header className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Statistics</h1>
-        <div className="flex flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700 p-1">
+        <h1 className="text-2xl font-bold text-text">Statistics</h1>
+        <div className="flex flex-wrap gap-2 bg-surface rounded-lg shadow-sm overflow-hidden border border-border p-1">
           {[7, 30, 90, 180, 365, 'all'].map((range) => (
             <button
               key={range}
-              className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === range ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900'}`}
+              className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === range ? 'bg-purple-100 text-purple-700 font-medium' : 'text-text-muted hover:bg-bg'}`}
               onClick={() => setTimeRange(range as TimeRange)}
             >
               {typeof range === 'number' ? (range >= 30 ? (range === 365 ? '1Y' : `${range/30}M`) : `${range}D`) : 'All'}
@@ -197,7 +197,7 @@ export default function Stats() {
           ))}
           {settings.weightGoal && (
             <button
-              className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === 'goal' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900'}`}
+              className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === 'goal' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-text-muted hover:bg-bg'}`}
               onClick={() => setTimeRange('goal')}
             >
               Goal
@@ -205,12 +205,12 @@ export default function Stats() {
           )}
         </div>
         <div className="flex items-center gap-2 mt-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">Averaging:</span>
-          <div className="flex flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700 p-1">
+          <span className="text-sm text-text-muted font-medium">Averaging:</span>
+          <div className="flex flex-wrap gap-2 bg-surface rounded-lg shadow-sm overflow-hidden border border-border p-1">
             {['auto', 'daily', 'weekly', 'monthly'].map((avg) => (
               <button
                 key={avg}
-                className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900'}`}
+                className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 text-purple-700 font-medium' : 'text-text-muted hover:bg-bg'}`}
                 onClick={() => setAveraging(avg as typeof averaging)}
               >
                 {avg}
@@ -220,10 +220,10 @@ export default function Stats() {
         </div>
 
         <div className="flex items-center gap-2 mt-2">
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-text">
             <input
               type="checkbox"
-              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded"
+              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-border rounded"
               checked={excludeZeroes}
               onChange={(e) => setExcludeZeroes(e.target.checked)}
             />
@@ -232,7 +232,7 @@ export default function Stats() {
         </div>
       </header>
 
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+      <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border">
         <h2 className="text-lg font-semibold mb-4">Log Weight</h2>
         <div className="flex gap-2">
           <input
@@ -240,7 +240,7 @@ export default function Stats() {
             step="0.1"
             value={currentWeightInput}
             onChange={(e) => setCurrentWeightInput(e.target.value)}
-            className="flex-1 p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="flex-1 p-3 bg-surface text-text border border-border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Weight in kg"
           />
           <button
@@ -252,7 +252,7 @@ export default function Stats() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 h-72">
+      <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border h-72">
         <h2 className="text-lg font-semibold mb-2">Calories Consumed</h2>
         <ResponsiveContainer width="100%" height="100%">
 
@@ -268,7 +268,7 @@ export default function Stats() {
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 h-72">
+      <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border h-72">
         <h2 className="text-lg font-semibold mb-2">Body Weight</h2>
         <ResponsiveContainer width="100%" height="100%">
 
@@ -294,7 +294,7 @@ export default function Stats() {
             <p className="text-purple-100 text-sm">Calculated from your logged data</p>
           </div>
           <select
-            className="bg-white dark:bg-gray-800/20 border border-white/30 text-white text-sm rounded-lg p-1.5 focus:ring-white focus:border-white"
+            className="bg-white/20 dark:bg-gray-800/20 border border-white/30 text-white text-sm rounded-lg p-1.5 focus:ring-white focus:border-white"
             value={tdeeRange}
             onChange={(e) => setTdeeRange(e.target.value === 'all' ? 'all' : Number(e.target.value) as 30 | 60 | 90)}
           >
@@ -314,7 +314,7 @@ export default function Stats() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm bg-white dark:bg-gray-800/10 p-3 rounded-xl backdrop-blur-sm">
+            <div className="grid grid-cols-2 gap-4 text-sm bg-white/10 dark:bg-gray-800/10 p-3 rounded-xl backdrop-blur-sm">
               <div>
                 <p className="text-purple-200">Avg Intake</p>
                 <p className="font-medium">{tdeeCalc.avgIntake} kcal</p>
@@ -326,7 +326,7 @@ export default function Stats() {
             </div>
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-800/10 p-4 rounded-xl text-sm">
+          <div className="bg-white/10 dark:bg-gray-800/10 p-4 rounded-xl text-sm">
             <p>We need more data to calculate your true maintenance calories.</p>
             <p className="mt-2 text-purple-200 opacity-80">Log your food and weight consistently for at least 14 days.</p>
           </div>
