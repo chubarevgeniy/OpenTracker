@@ -27,7 +27,7 @@ export async function parseSummaryImage(file: File): Promise<{ date: string; cal
  }
 
  let carbs = 0, protein = 0, fat = 0;
- const macroMatch = text.match(/(\d+)\s*\/\s*\d+\s*[g9]*\s+(\d+)\s*\/\s*\d+\s*[g9]*\s+(\d+)\s*\/\s*\d+/);
+ const macroMatch = text.match(/(\d+)\s*\/\s*\d+.*?(\d+)\s*\/\s*\d+.*?(\d+)\s*\/\s*\d+/);
  if (macroMatch) {
  carbs = parseInt(macroMatch[1], 10);
  protein = parseInt(macroMatch[2], 10);
