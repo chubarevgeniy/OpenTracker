@@ -39,7 +39,7 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
     addSearchHistory(foodItem)
 
     onSuccess()
-    navigate('/')
+    navigate(`/?date=${today}`)
   }
 
   const factor = (amount || 0) / 100
