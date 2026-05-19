@@ -251,6 +251,8 @@ const handleCalculateFromGoal = () => {
     if (file) {
       importFromCSV(file)
     }
+    // Reset the input value so the same file can be selected again
+    e.target.value = ''
   }
 
   const handleReset = () => {
@@ -654,7 +656,7 @@ const handleCalculateFromGoal = () => {
           <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-blue-50 text-blue-700 font-medium rounded-xl hover:bg-blue-100 transition-colors border border-blue-200 cursor-pointer">
             <Upload size={20} />
             Import
-            <input type="file" accept=".csv" onChange={handleImport} className="hidden" />
+            <input type="file" accept=".csv,text/csv,application/csv,application/x-csv,text/comma-separated-values,text/x-csv,text/x-comma-separated-values,application/vnd.ms-excel" onChange={handleImport} className="hidden" />
           </label>
         </div>
 
