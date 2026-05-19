@@ -87,10 +87,10 @@ export default function Search() {
 
   if (selectedFood) {
     return (
-      <div className="p-4 bg-gray-50 dark:bg-gray-900 h-full overflow-y-auto">
+      <div className="p-4 bg-bg h-full overflow-y-auto">
         <button
           onClick={() => setSelectedFood(null)}
-          className="mb-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 flex items-center text-sm"
+          className="mb-4 text-text-muted hover:text-text flex items-center text-sm"
         >
           <X size={16} className="mr-1" /> Back to search
         </button>
@@ -105,8 +105,8 @@ export default function Search() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
-      <div className="p-4 bg-white dark:bg-gray-800 shadow-sm z-10 sticky top-0">
+    <div className="flex flex-col h-full bg-bg">
+      <div className="p-4 bg-surface shadow-sm z-10 sticky top-0">
         <form onSubmit={handleSearch} className="flex gap-2 mb-4">
           <div className="relative flex-1">
             <input
@@ -114,14 +114,14 @@ export default function Search() {
               placeholder="Search food..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-transparent rounded-xl focus:border-purple-500 focus:bg-white dark:bg-gray-800 focus:ring-0"
+              className="w-full pl-10 pr-4 py-2 bg-surface-hover text-text border-transparent rounded-xl focus:border-purple-500 focus:bg-surface focus:ring-0"
             />
             <SearchIcon className="absolute left-3 top-2.5 text-gray-400" size={20} />
           </div>
           <button
             type="button"
             onClick={() => setShowScanner(!showScanner)}
-            className="p-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:bg-gray-700"
+            className="p-2 bg-surface-hover text-text-muted rounded-xl hover:bg-border"
           >
             <Camera size={24} />
           </button>
@@ -129,25 +129,25 @@ export default function Search() {
 
         <div className="flex gap-4 border-b">
           <button
-            className={`pb-2 text-sm font-medium ${activeTab === 'search' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100'}`}
+            className={`pb-2 text-sm font-medium ${activeTab === 'search' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted hover:text-text'}`}
             onClick={() => setActiveTab('search')}
           >
             Search
           </button>
           <button
-            className={`pb-2 text-sm font-medium ${activeTab === 'recent' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400'}`}
+            className={`pb-2 text-sm font-medium ${activeTab === 'recent' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted'}`}
             onClick={() => setActiveTab('recent')}
           >
             Recent
           </button>
           <button
-            className={`pb-2 text-sm font-medium ${activeTab === 'frequent' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400'}`}
+            className={`pb-2 text-sm font-medium ${activeTab === 'frequent' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted'}`}
             onClick={() => setActiveTab('frequent')}
           >
             Frequent
           </button>
           <button
-            className={`pb-2 text-sm font-medium ${activeTab === 'custom' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400'}`}
+            className={`pb-2 text-sm font-medium ${activeTab === 'custom' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-text-muted'}`}
             onClick={() => setActiveTab('custom')}
           >
             Custom
@@ -163,84 +163,84 @@ export default function Search() {
         )}
 
         {loading ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">Searching...</div>
+          <div className="text-center py-8 text-text-muted">Searching...</div>
         ) : (
           <div className="space-y-3">
             {displayList.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setSelectedFood(item)}
-                className="w-full text-left bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4 hover:border-purple-200 transition-colors"
+                className="w-full text-left bg-surface p-3 rounded-xl shadow-sm border border-border flex items-center gap-4 hover:border-purple-200 transition-colors"
               >
                 {item.image_url ? (
                   <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded-lg" />
                 ) : (
-                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">
+                  <div className="w-12 h-12 bg-surface-hover rounded-lg flex items-center justify-center text-gray-400">
                     <SearchIcon size={20} />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{item.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.brand || 'Generic'} • {Math.round(item.calories)} kcal / 100g</p>
+                  <p className="font-medium text-text truncate">{item.name}</p>
+                  <p className="text-xs text-text-muted truncate">{item.brand || 'Generic'} • {Math.round(item.calories)} kcal / 100g</p>
                 </div>
               </button>
             ))}
             {displayList.length === 0 && !loading && activeTab === 'search' && query && (
-              <p className="text-center text-gray-500 dark:text-gray-400 py-8">No results found for "{query}"</p>
+              <p className="text-center text-text-muted py-8">No results found for "{query}"</p>
             )}
             {displayList.length === 0 && activeTab !== 'search' && (
-              <p className="text-center text-gray-500 dark:text-gray-400 py-8">No history yet.</p>
+              <p className="text-center text-text-muted py-8">No history yet.</p>
             )}
           </div>
         )}
 
         {activeTab === 'custom' && (
-          <form onSubmit={handleCustomFoodSubmit} className="space-y-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+          <form onSubmit={handleCustomFoodSubmit} className="space-y-4 bg-surface p-4 rounded-xl shadow-sm">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Food Name</label>
+              <label className="block text-sm font-medium text-text">Food Name</label>
               <input
                 type="text"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                 value={customFood.name}
                 onChange={(e) => setCustomFood({ ...customFood, name: e.target.value })}
                 placeholder="e.g. Homemade Sandwich"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Calories (per 100g or 1 serving)</label>
+              <label className="block text-sm font-medium text-text">Calories (per 100g or 1 serving)</label>
               <input
                 type="number"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                 value={customFood.calories}
                 onChange={(e) => setCustomFood({ ...customFood, calories: e.target.value })}
               />
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Protein (g)</label>
+                <label className="block text-sm font-medium text-text">Protein (g)</label>
                 <input
                   type="number"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={customFood.protein}
                   onChange={(e) => setCustomFood({ ...customFood, protein: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Carbs (g)</label>
+                <label className="block text-sm font-medium text-text">Carbs (g)</label>
                 <input
                   type="number"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={customFood.carbs}
                   onChange={(e) => setCustomFood({ ...customFood, carbs: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Fat (g)</label>
+                <label className="block text-sm font-medium text-text">Fat (g)</label>
                 <input
                   type="number"
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                   value={customFood.fat}
                   onChange={(e) => setCustomFood({ ...customFood, fat: e.target.value })}
                 />

@@ -45,24 +45,24 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
   const factor = (amount || 0) / 100
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+    <div className="bg-surface rounded-2xl p-6 shadow-sm border border-border">
       <div className="flex gap-4 items-start mb-6">
         {foodItem.image_url ? (
           <img src={foodItem.image_url} alt={foodItem.name} className="w-20 h-20 object-cover rounded-xl" />
         ) : (
-          <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
+          <div className="w-20 h-20 bg-surface-hover rounded-xl flex items-center justify-center">
             <span className="text-gray-400 text-xs">No image</span>
           </div>
         )}
         <div>
-          <h2 className="text-xl font-bold leading-tight text-gray-900 dark:text-gray-100">{foodItem.name}</h2>
+          <h2 className="text-xl font-bold leading-tight text-text">{foodItem.name}</h2>
           {foodItem.brand && <p className="text-gray-500 text-sm mt-1">{foodItem.brand}</p>}
         </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (grams or ml)</label>
+          <label className="block text-sm font-medium text-text mb-1">Amount (grams or ml)</label>
           <div className="relative">
             <input
               type="number"
@@ -80,7 +80,7 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
           <select
             value={mealType}
             onChange={(e) => setMealType(e.target.value as MealType)}
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full p-3 border border-border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-surface text-text"
           >
             <option value="breakfast">Breakfast</option>
             <option value="lunch">Lunch</option>

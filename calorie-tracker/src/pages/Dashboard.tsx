@@ -9,10 +9,10 @@ const ProgressBar = ({ label, current, target, colorClass }: { label: string, cu
   return (
     <div className="flex-1">
       <div className="flex justify-between text-xs mb-1">
-        <span className="font-medium text-gray-700 dark:text-gray-300">{label}</span>
-        <span className="text-gray-500 dark:text-gray-400">{Math.round(current)} / {target}g</span>
+        <span className="font-medium text-text">{label}</span>
+        <span className="text-text-muted">{Math.round(current)} / {target}g</span>
       </div>
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div className="w-full bg-border rounded-full h-2">
         <div
           className={`h-2 rounded-full ${colorClass}`}
           style={{ width: `${percentage}%` }}
@@ -45,11 +45,11 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 mb-4">
+    <div className="bg-surface p-4 rounded-xl shadow-sm border border-border mb-4">
       <div className="flex justify-between items-center mb-3">
         <div>
-          <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">{title}</h3>
-          <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round(mealCalories)} kcal</span>
+          <h3 className="font-semibold text-lg text-text">{title}</h3>
+          <span className="text-sm text-text-muted">{Math.round(mealCalories)} kcal</span>
         </div>
         <Link
           to={`/search?meal=${mealType}&date=${today}`}
@@ -66,16 +66,16 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
               {editingId === entry.id ? (
                 <div className="flex-1 flex items-center justify-between gap-2">
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">{entry.foodItem.name}</p>
+                    <p className="font-medium text-text line-clamp-1">{entry.foodItem.name}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <input
                         type="number"
                         value={editAmount}
                         onChange={(e) => setEditAmount(e.target.value)}
-                        className="w-20 px-2 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-20 px-2 py-1 text-sm border border-border rounded bg-surface text-text"
                         autoFocus
                       />
-                      <span className="text-gray-500 dark:text-gray-400">g</span>
+                      <span className="text-text-muted">g</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
                     </button>
                     <button
                       onClick={handleCancelEdit}
-                      className="p-1.5 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+                      className="p-1.5 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full hover:bg-border"
                     >
                       <X size={16} />
                     </button>
@@ -96,13 +96,13 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
               ) : (
                 <>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">{entry.foodItem.name}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs">
+                    <p className="font-medium text-text">{entry.foodItem.name}</p>
+                    <p className="text-text-muted text-xs">
                       {entry.amount}g • {entry.foodItem.brand || 'Generic'}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{Math.round(entry.calories)} kcal</span>
+                    <span className="font-semibold text-text">{Math.round(entry.calories)} kcal</span>
                     <button
                       onClick={() => handleEditClick(entry)}
                       className="text-blue-400 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-400"
@@ -204,14 +204,14 @@ export default function Dashboard() {
   const goToNextDay = () => handleDateChange(addDays(selectedDateObj, 1))
 
   return (
-    <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-[100%] pb-8">
+    <div className="p-4 space-y-6 bg-bg min-h-[100%] pb-8">
       <header className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">
             {isToday(selectedDateObj) ? 'Today' : format(selectedDateObj, 'MMM d, yyyy')}
           </h1>
-          <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-1">
-            <button onClick={goToPreviousDay} className="p-1.5 hover:bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 bg-surface rounded-xl shadow-sm border border-border p-1">
+            <button onClick={goToPreviousDay} className="p-1.5 hover:bg-surface-hover rounded-lg text-text-muted">
               <ChevronLeft size={20} />
             </button>
             <input
@@ -222,9 +222,9 @@ export default function Dashboard() {
                   handleDateChange(new Date(e.target.value + 'T00:00:00'))
                 }
               }}
-              className="bg-transparent border-none text-sm font-medium text-gray-700 dark:text-gray-300 focus:ring-0 cursor-pointer p-0 w-[110px]"
+              className="bg-transparent border-none text-sm font-medium text-text focus:ring-0 cursor-pointer p-0 w-[110px]"
             />
-            <button onClick={goToNextDay} className="p-1.5 hover:bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400">
+            <button onClick={goToNextDay} className="p-1.5 hover:bg-surface-hover rounded-lg text-text-muted">
               <ChevronRight size={20} />
             </button>
           </div>
@@ -232,21 +232,21 @@ export default function Dashboard() {
       </header>
 
       {/* Weight Input */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4">
+      <div className="bg-surface p-4 rounded-xl shadow-sm border border-border flex items-center gap-4">
         <div className="p-2 bg-blue-50 text-blue-600 rounded-full">
           <Scale size={20} />
         </div>
         <form onSubmit={handleWeightSubmit} className="flex-1 flex gap-2">
-          <div className="flex-1 flex items-center border border-gray-200 dark:border-gray-700 rounded-lg px-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 bg-gray-50 dark:bg-gray-900">
+          <div className="flex-1 flex items-center border border-border rounded-lg px-3 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 bg-bg">
             <input
               type="number"
               step="0.1"
               value={weightInput}
               onChange={(e) => setWeightInput(e.target.value)}
-              className="w-full bg-transparent border-none focus:ring-0 p-2 text-gray-900 dark:text-gray-100"
+              className="w-full bg-transparent border-none focus:ring-0 p-2 text-text"
               placeholder="Weight"
             />
-            <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">kg</span>
+            <span className="text-text-muted text-sm font-medium">kg</span>
           </div>
           <button
             type="submit"
@@ -258,7 +258,7 @@ export default function Dashboard() {
       </div>
 
       {/* Summary Card */}
-      <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+      <div className="bg-surface p-5 rounded-2xl shadow-sm border border-border">
         <div className="flex flex-col items-center mb-6">
           <div className="relative w-32 h-32 flex items-center justify-center">
             {/* Simple circular progress visualization using conic-gradient */}
@@ -268,18 +268,18 @@ export default function Dashboard() {
                 background: `conic-gradient(#aa3bff ${(totals.calories / Number(settings.targetCalories || 1)) * 360}deg, #f3f4f6 0deg)`
               }}
             ></div>
-            <div className="absolute inset-2 bg-white dark:bg-gray-800 rounded-full flex flex-col items-center justify-center">
+            <div className="absolute inset-2 bg-surface rounded-full flex flex-col items-center justify-center">
               <span className="text-2xl font-bold">{Math.round(Number(settings.targetCalories) - totals.calories)}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remaining</span>
+              <span className="text-xs text-text-muted uppercase tracking-wider">Remaining</span>
             </div>
           </div>
           <div className="flex justify-between w-full mt-4 text-center px-4">
             <div>
-              <p className="text-gray-500 dark:text-gray-400 text-xs">Consumed</p>
+              <p className="text-text-muted text-xs">Consumed</p>
               <p className="font-semibold">{Math.round(totals.calories)}</p>
             </div>
             <div>
-              <p className="text-gray-500 dark:text-gray-400 text-xs">Target</p>
+              <p className="text-text-muted text-xs">Target</p>
               <p className="font-semibold">{settings.targetCalories || 0}</p>
             </div>
           </div>
