@@ -121,7 +121,7 @@ export default function Stats() {
             goalWeight: point.goalWeight
           }
         }
-        if (point.calories && point.calories > 0) {
+        if (point.calories !== null) {
           weeklyData[weekStart].totalCalories += (point.calories || 0)
           weeklyData[weekStart].calCount += 1
         }
@@ -134,7 +134,7 @@ export default function Stats() {
       return Object.values(weeklyData).map((w: any) => ({
         date: w.date,
         fullDate: w.fullDate,
-        calories: w.calCount > 0 ? Math.round(w.totalCalories / w.calCount) : 0,
+        calories: w.calCount > 0 ? Math.round(w.totalCalories / w.calCount) : null,
         weight: w.weightCount > 0 ? Number((w.weightSum / w.weightCount).toFixed(1)) : null,
         goalWeight: w.goalWeight
       }))
@@ -155,7 +155,7 @@ export default function Stats() {
             goalWeight: point.goalWeight
           }
         }
-        if (point.calories && point.calories > 0) {
+        if (point.calories !== null) {
           monthlyData[monthStart].totalCalories += (point.calories || 0)
           monthlyData[monthStart].calCount += 1
         }
@@ -168,7 +168,7 @@ export default function Stats() {
       return Object.values(monthlyData).map((m: any) => ({
         date: m.date,
         fullDate: m.fullDate,
-        calories: m.calCount > 0 ? Math.round(m.totalCalories / m.calCount) : 0,
+        calories: m.calCount > 0 ? Math.round(m.totalCalories / m.calCount) : null,
         weight: m.weightCount > 0 ? Number((m.weightSum / m.weightCount).toFixed(1)) : null,
         goalWeight: m.goalWeight
       }))
