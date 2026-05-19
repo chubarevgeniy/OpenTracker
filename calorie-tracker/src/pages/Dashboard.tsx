@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
 import { format, addDays, subDays, isToday } from 'date-fns'
 import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X } from 'lucide-react'
@@ -152,11 +152,15 @@ export default function Dashboard() {
 
  // Find latest weight
  let latestWeight = settings.weight;
+
+  const sortedDates = useMemo(() => {
+    return Object.keys(dailyLogs).sort().reverse()
+  }, [dailyLogs])
+
  if (log.weight) {
  latestWeight = log.weight;
  } else {
  // Find the most recent weight before selectedDate
- const sortedDates = Object.keys(dailyLogs).sort().reverse()
  for (const date of sortedDates) {
  if (date < selectedDate && dailyLogs[date].weight) {
  latestWeight = dailyLogs[date].weight;
