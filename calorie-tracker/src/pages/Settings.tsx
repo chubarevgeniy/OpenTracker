@@ -18,34 +18,40 @@ const [showGoalForm, setShowGoalForm] = useState(false)
  const [showInfoTooltip, setShowInfoTooltip] = useState(false)
  const [goalTimeline, setGoalTimeline] = useState<'current' | 'start'>('current')
  const [parsingImage, setParsingImage] = useState(false)
- const [parsedData, setParsedData] = useState<{ date: string; calories: number; carbs: number; protein: number; fat: number } | null>(null)
+ const [parsedDataList, setParsedDataList] = useState<Array<{ date: string; calories: number; carbs: number; protein: number; fat: number }>>([])
  const [showParsedModal, setShowParsedModal] = useState(false)
 
  const addMealEntry = useAppStore((state) => state.addMealEntry)
 
  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
- const file = e.target.files?.[0]
- if (!file) return
+ const files = Array.from(e.target.files || [])
+ if (files.length === 0) return
 
  setParsingImage(true)
  try {
- const data = await parseSummaryImage(file)
- if (data) {
- setParsedData(data)
+ const results = await Promise.all(files.map(file => parseSummaryImage(file)))
+ const validData = results.filter((data): data is NonNullable<typeof data> => data !== null)
+
+ if (validData.length > 0) {
+ setParsedDataList(validData)
  setShowParsedModal(true)
  } else {
- alert('Could not parse image data.')
+ alert('Could not parse image data from any file.')
  }
  } catch (err) {
  console.error(err)
- alert('Error parsing image')
+ alert('Error parsing image(s)')
  } finally {
  setParsingImage(false)
+ // Reset input value so same files can be selected again
+ e.target.value = ''
  }
  }
 
- const handleConfirmParsedData = () => {
- if (!parsedData) return
+ const handleConfirmParsedDataList = () => {
+ if (parsedDataList.length === 0) return
+
+ parsedDataList.forEach(parsedData => {
  const entry = {
  id: crypto.randomUUID(),
  foodItem: {
@@ -66,8 +72,10 @@ const [showGoalForm, setShowGoalForm] = useState(false)
  }
 
  addMealEntry(parsedData.date, 'breakfast', entry)
+ })
+
  setShowParsedModal(false)
- setParsedData(null)
+ setParsedDataList([])
  }
 
  const [goalForm, setGoalForm] = useState<WeightGoal>(
@@ -641,7 +649,7 @@ const handleCalculateFromGoal = () => {
  <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-purple-50 text-purple-700 font-medium rounded-xl hover:bg-purple-100 transition-colors border border-purple-200 cursor-pointer mb-4">
  <ImageIcon size={20} />
  {parsingImage ? 'Parsing...' : 'Parse from Image'}
- <input type="file"accept="image/*"onChange={handleImageUpload} className="hidden"disabled={parsingImage} />
+ <input type="file"accept="image/*"multiple onChange={handleImageUpload} className="hidden"disabled={parsingImage} />
  </label>
 
  <div className="grid grid-cols-2 gap-4">
@@ -669,37 +677,42 @@ const handleCalculateFromGoal = () => {
  </button>
  </div>
 
- {showParsedModal && parsedData && (
+ {showParsedModal && parsedDataList.length > 0 && (
  <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
- <div className="bg-surface rounded-2xl p-6 max-w-sm w-full space-y-4">
- <h3 className="text-lg font-bold text-text">Parsed Data</h3>
+ <div className="bg-surface rounded-2xl p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto">
+ <h3 className="text-lg font-bold text-text">Parsed Data ({parsedDataList.length} items)</h3>
 
+ <div className="space-y-4">
+ {parsedDataList.map((parsedData, index) => (
+ <div key={index} className="p-4 border border-border rounded-xl space-y-2 bg-bg">
  {useAppStore.getState().dailyLogs[parsedData.date] && (
- <div className="p-3 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-200">
+ <div className="p-2 mb-2 bg-yellow-50 text-yellow-800 text-xs rounded-lg border border-yellow-200">
  Warning: Data already exists for {parsedData.date}.
  </div>
  )}
-
- <div className="space-y-2 text-sm text-text">
+ <div className="grid grid-cols-2 gap-2 text-sm text-text">
  <p><strong>Date:</strong> {parsedData.date}</p>
  <p><strong>Calories:</strong> {parsedData.calories} kcal</p>
  <p><strong>Carbs:</strong> {parsedData.carbs} g</p>
  <p><strong>Protein:</strong> {parsedData.protein} g</p>
  <p><strong>Fat:</strong> {parsedData.fat} g</p>
  </div>
+ </div>
+ ))}
+ </div>
 
- <div className="flex gap-3 pt-4">
+ <div className="flex gap-3 pt-4 sticky bottom-0 bg-surface pb-2">
  <button
- onClick={() => setShowParsedModal(false)}
- className="flex-1 py-2 px-4 bg-surface-hover text-text font-medium rounded-xl hover:bg-border"
+ onClick={() => { setShowParsedModal(false); setParsedDataList([]); }}
+ className="flex-1 py-2 px-4 bg-surface-hover text-text font-medium rounded-xl hover:bg-border transition-colors"
  >
  Cancel
  </button>
  <button
- onClick={handleConfirmParsedData}
- className="flex-1 py-2 px-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700"
+ onClick={handleConfirmParsedDataList}
+ className="flex-1 py-2 px-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition-colors"
  >
- Add as Breakfast
+ Add All as Breakfast
  </button>
  </div>
  </div>
