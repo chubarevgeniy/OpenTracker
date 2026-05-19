@@ -6,10 +6,11 @@ import { useAppStore, type FoodItem, type MealType } from '../store'
 interface MealEntryFormProps {
   foodItem: FoodItem
   defaultMealType: MealType
+  defaultDate?: string
   onSuccess: () => void
 }
 
-export default function MealEntryForm({ foodItem, defaultMealType, onSuccess }: MealEntryFormProps) {
+export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, onSuccess }: MealEntryFormProps) {
   const navigate = useNavigate()
   const [amount, setAmount] = useState<number | ''>(100)
   const [mealType, setMealType] = useState<MealType>(defaultMealType)
@@ -32,7 +33,7 @@ export default function MealEntryForm({ foodItem, defaultMealType, onSuccess }: 
       timestamp: Date.now()
     }
 
-    const today = format(new Date(), 'yyyy-MM-dd')
+    const today = defaultDate || format(new Date(), 'yyyy-MM-dd')
 
     addMealEntry(today, mealType, entry)
     addSearchHistory(foodItem)

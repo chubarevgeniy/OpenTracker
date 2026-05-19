@@ -52,7 +52,7 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
           <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round(mealCalories)} kcal</span>
         </div>
         <Link
-          to={`/search?meal=${mealType}`}
+          to={`/search?meal=${mealType}&date=${today}`}
           className="p-2 bg-purple-50 text-purple-600 rounded-full hover:bg-purple-100"
         >
           <Plus size={20} />
