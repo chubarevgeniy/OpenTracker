@@ -4,8 +4,8 @@ import { cn } from '../lib/utils'
 
 export default function Layout() {
   return (
-    <div className="flex flex-col min-h-screen pb-[70px] bg-gray-50 dark:bg-gray-900">
-      <main className="flex-1 w-full max-w-md mx-auto bg-white dark:bg-gray-800 shadow-sm min-h-screen">
+    <div className="flex flex-col h-screen h-[100dvh] overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <main className="flex-1 w-full max-w-md mx-auto bg-white dark:bg-gray-800 shadow-sm overflow-y-auto pb-[70px]">
         <Outlet />
       </main>
 

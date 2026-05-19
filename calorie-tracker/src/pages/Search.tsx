@@ -87,7 +87,7 @@ export default function Search() {
 
   if (selectedFood) {
     return (
-      <div className="p-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-4 bg-gray-50 dark:bg-gray-900 h-full overflow-y-auto">
         <button
           onClick={() => setSelectedFood(null)}
           className="mb-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 flex items-center text-sm"
@@ -105,7 +105,7 @@ export default function Search() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900 min-h-screen pb-24">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       <div className="p-4 bg-white dark:bg-gray-800 shadow-sm z-10 sticky top-0">
         <form onSubmit={handleSearch} className="flex gap-2 mb-4">
           <div className="relative flex-1">

@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
 import { format, addDays, subDays, isToday } from 'date-fns'
 import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 const ProgressBar = ({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
   const percentage = Math.min(100, Math.round((current / (target || 1)) * 100))
@@ -129,8 +129,15 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
 }
 
 export default function Dashboard() {
-  const [selectedDateObj, setSelectedDateObj] = useState(new Date())
+  const [searchParams, setSearchParams] = useSearchParams()
+  const dateParam = searchParams.get('date')
+
+  const selectedDateObj = dateParam ? new Date(dateParam + 'T00:00:00') : new Date()
   const selectedDate = format(selectedDateObj, 'yyyy-MM-dd')
+
+  const handleDateChange = (newDate: Date) => {
+    setSearchParams({ date: format(newDate, 'yyyy-MM-dd') })
+  }
 
   const settings = useAppStore((state) => state.settings)
   const dailyLogs = useAppStore((state) => state.dailyLogs)
@@ -144,19 +151,19 @@ export default function Dashboard() {
   }
 
   // Find latest weight
-  const latestWeight = useMemo(() => {
-    if (log.weight) return log.weight
-
+  let latestWeight = settings.weight;
+  if (log.weight) {
+    latestWeight = log.weight;
+  } else {
     // Find the most recent weight before selectedDate
     const sortedDates = Object.keys(dailyLogs).sort().reverse()
     for (const date of sortedDates) {
       if (date < selectedDate && dailyLogs[date].weight) {
-        return dailyLogs[date].weight
+        latestWeight = dailyLogs[date].weight;
+        break;
       }
     }
-
-    return settings.weight
-  }, [log.weight, dailyLogs, selectedDate, settings.weight])
+  }
 
   const [weightInput, setWeightInput] = useState(latestWeight.toString())
 
@@ -193,11 +200,11 @@ export default function Dashboard() {
 
   const totals = calculateTotals()
 
-  const goToPreviousDay = () => setSelectedDateObj(prev => subDays(prev, 1))
-  const goToNextDay = () => setSelectedDateObj(prev => addDays(prev, 1))
+  const goToPreviousDay = () => handleDateChange(subDays(selectedDateObj, 1))
+  const goToNextDay = () => handleDateChange(addDays(selectedDateObj, 1))
 
   return (
-    <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen pb-24">
+    <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-[100%] pb-8">
       <header className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">
@@ -212,7 +219,7 @@ export default function Dashboard() {
               value={selectedDate}
               onChange={(e) => {
                 if (e.target.value) {
-                  setSelectedDateObj(new Date(e.target.value + 'T00:00:00'))
+                  handleDateChange(new Date(e.target.value + 'T00:00:00'))
                 }
               }}
               className="bg-transparent border-none text-sm font-medium text-gray-700 dark:text-gray-300 focus:ring-0 cursor-pointer p-0 w-[110px]"
