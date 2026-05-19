@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 import { format, subDays, differenceInDays, startOfWeek, startOfMonth } from 'date-fns'
 import { useAppStore } from '../store'
 import { calculateTDEE } from '../utils/calculations'
@@ -200,13 +200,13 @@ export default function Stats() {
 
  return (
  <div className="p-4 space-y-6 bg-bg min-h-screen pb-24">
- <header className="flex flex-col gap-4">
- <h1 className="text-2xl font-bold text-text">Statistics</h1>
- <div className="flex flex-wrap gap-2 bg-surface rounded-lg shadow-sm overflow-hidden border border-border p-1">
+ <header className="flex flex-col gap-5 pt-2">
+ <h1 className="text-2xl font-black text-text">Statistics</h1>
+ <div className="flex bg-surface p-1.5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
  {[7, 30, 90, 180, 365, 'all'].map((range) => (
  <button
  key={range}
- className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === range ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium' : 'text-text-muted hover:bg-bg'}`}
+ className={`flex-1 py-2 text-xs font-bold rounded-xl transition-colors ${timeRange === range ? 'bg-bg-alt text-text' : 'text-text-muted hover:text-text'}`}
  onClick={() => setTimeRange(range as TimeRange)}
  >
  {typeof range === 'number' ? (range >= 30 ? (range === 365 ? '1Y' : `${range/30}M`) : `${range}D`) : 'All'}
@@ -214,20 +214,20 @@ export default function Stats() {
  ))}
  {settings.weightGoal && (
  <button
- className={`flex-1 px-2 py-1.5 text-xs rounded-md ${timeRange === 'goal' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium' : 'text-text-muted hover:bg-bg'}`}
+ className={`flex-1 py-2 text-xs font-bold rounded-xl transition-colors ${timeRange === 'goal' ? 'bg-bg-alt text-text' : 'text-text-muted hover:text-text'}`}
  onClick={() => setTimeRange('goal')}
  >
  Goal
  </button>
  )}
  </div>
- <div className="flex items-center gap-2 mt-2">
- <span className="text-sm text-text-muted font-medium">Averaging:</span>
- <div className="flex flex-wrap gap-2 bg-surface rounded-lg shadow-sm overflow-hidden border border-border p-1">
+ <div className="flex items-center gap-3">
+ <span className="text-sm text-text-muted font-bold">Averaging:</span>
+ <div className="flex flex-1 bg-surface p-1.5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
  {['auto', 'daily', 'weekly', 'monthly'].map((avg) => (
  <button
  key={avg}
- className={`px-3 py-1.5 text-xs rounded-md capitalize ${averaging === avg ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-medium' : 'text-text-muted hover:bg-bg'}`}
+ className={`flex-1 py-1.5 text-xs font-bold rounded-xl capitalize transition-colors ${averaging === avg ? 'bg-bg-alt text-text' : 'text-text-muted hover:text-text'}`}
  onClick={() => setAveraging(avg as typeof averaging)}
  >
  {avg}
@@ -236,86 +236,92 @@ export default function Stats() {
  </div>
  </div>
 
- <div className="flex items-center gap-2 mt-2">
- <label className="flex items-center gap-2 cursor-pointer text-sm text-text">
+ <div className="flex items-center gap-2">
+ <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-text">
  <input
  type="checkbox"
- className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-border rounded"
+ className="h-5 w-5 text-primary focus:ring-primary border-transparent rounded-md bg-surface shadow-sm"
  checked={excludeZeroes}
  onChange={(e) => setExcludeZeroes(e.target.checked)}
  />
- Exclude 0 calorie days from line connection
+ Exclude 0 calorie days from lines
  </label>
  </div>
  </header>
 
- <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border">
- <h2 className="text-lg font-semibold mb-4">Log Weight</h2>
- <div className="flex gap-2">
+ <div className="bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-3 border border-transparent">
+ <div className="flex items-center gap-2 mb-1">
+ <span className="font-bold text-lg text-text">Log Weight</span>
+ </div>
+ <div className="flex gap-3">
  <input
  type="number"
  step="0.1"
  value={currentWeightInput}
  onChange={(e) => setCurrentWeightInput(e.target.value)}
- className="flex-1 p-3 bg-surface text-text border border-border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+ className="flex-1 p-4 bg-bg border-2 border-transparent rounded-2xl focus:ring-0 focus:border-primary text-xl font-black transition-colors"
  placeholder="Weight in kg"
  />
  <button
  onClick={handleLogWeight}
- className="px-6 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700"
+ className="px-8 bg-primary text-black font-black text-lg rounded-2xl hover:opacity-90 shadow-[0_4px_14px_rgba(197,248,42,0.4)] transition-all"
  >
  Save
  </button>
  </div>
  </div>
 
- <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border h-72">
- <h2 className="text-lg font-semibold mb-2">Calories Consumed</h2>
+ <div className="bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent h-80 flex flex-col">
+ <h2 className="text-lg font-bold mb-4 text-text">Calories Consumed</h2>
+ <div className="flex-1 min-h-0">
  <ResponsiveContainer width="100%"height="100%">
-
  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
- <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
- <CartesianGrid strokeDasharray="3 3"vertical={false} />
- <XAxis dataKey="date"fontSize={12} tickMargin={10} />
- <YAxis fontSize={12} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
- <Line type="monotone"dataKey="calories"stroke="#c084fc"strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="Calories"connectNulls={true} />
- <ReferenceLine y={settings.targetCalories} stroke="#e5e7eb"strokeDasharray="3 3"/>
- </LineChart>
+ <BarChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={12}>
+ <CartesianGrid strokeDasharray="3 3"vertical={false} stroke="var(--theme-border)" />
+ <XAxis dataKey="date"fontSize={10} tickMargin={10} axisLine={false} tickLine={false} fontWeight="bold" />
+ <YAxis fontSize={10} axisLine={false} tickLine={false} fontWeight="bold" />
+ <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: 'none', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontWeight: 'bold' }} cursor={{fill: 'var(--theme-surface-hover)'}}/>
+ <Bar dataKey="calories" fill="var(--color-primary)" radius={[4, 4, 4, 4]} name="Calories" />
+ <ReferenceLine y={settings.targetCalories} stroke="var(--theme-text-muted)" strokeDasharray="3 3" strokeWidth={2}/>
+ </BarChart>
  </ResponsiveContainer>
  </div>
+ </div>
 
- <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border h-72">
- <h2 className="text-lg font-semibold mb-2">Body Weight</h2>
+ <div className="bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent h-80 flex flex-col">
+ <h2 className="text-lg font-bold mb-4 text-text">Body Weight</h2>
+ <div className="flex-1 min-h-0">
  <ResponsiveContainer width="100%"height="100%">
-
  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
  <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
- <CartesianGrid strokeDasharray="3 3"vertical={false} />
- <XAxis dataKey="date"fontSize={12} tickMargin={10} />
- <YAxis domain={['auto', 'auto']} fontSize={12} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
- <Line type="monotone"dataKey="weight"stroke="#3b82f6"strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="Weight (kg)"/>
+ <CartesianGrid strokeDasharray="3 3"vertical={false} stroke="var(--theme-border)" />
+ <XAxis dataKey="date"fontSize={10} tickMargin={10} axisLine={false} tickLine={false} fontWeight="bold" />
+ <YAxis domain={['auto', 'auto']} fontSize={10} axisLine={false} tickLine={false} fontWeight="bold" />
+ <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: 'none', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontWeight: 'bold' }} />
+ <Line type="monotone"dataKey="weight"stroke="#3b82f6"strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 7 }} name="Weight (kg)"/>
  {settings.weightGoal && (
- <Line type="monotone"dataKey="goalWeight"stroke="#10b981"strokeWidth={2} strokeDasharray="5 5"dot={false} name="Goal (kg)"/>
+ <Line type="monotone"dataKey="goalWeight"stroke="#10b981"strokeWidth={3} strokeDasharray="5 5"dot={false} name="Goal (kg)"/>
  )}
  </LineChart>
  </ResponsiveContainer>
  </div>
+ </div>
 
-      <div className="bg-surface p-4 rounded-2xl shadow-sm border border-border h-72">
-        <h2 className="text-lg font-semibold mb-2">Base Consumption (TDEE)</h2>
-        <ResponsiveContainer width="100%" height="100%">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="date" fontSize={12} tickMargin={10} />
-            <YAxis domain={['auto', 'auto']} fontSize={12} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-            <Line type="monotone" dataKey="tdee" stroke="#f59e0b" strokeWidth={3} dot={{ r: 2 }} activeDot={{ r: 6 }} name="TDEE (kcal)" connectNulls={true} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+ <div className="bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent h-80 flex flex-col">
+ <h2 className="text-lg font-bold mb-4 text-text">Base Consumption (TDEE)</h2>
+ <div className="flex-1 min-h-0">
+ <ResponsiveContainer width="100%" height="100%">
+ {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+ <LineChart data={chartData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+ <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--theme-border)" />
+ <XAxis dataKey="date" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} fontWeight="bold" />
+ <YAxis domain={['auto', 'auto']} fontSize={10} axisLine={false} tickLine={false} fontWeight="bold" />
+ <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: 'none', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontWeight: 'bold' }} />
+ <Line type="monotone" dataKey="tdee" stroke="#f59e0b" strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 7 }} name="TDEE (kcal)" connectNulls={true} />
+ </LineChart>
+ </ResponsiveContainer>
+ </div>
+ </div>
 
  {/* Real Energy Expenditure Card */}
  <div className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md">
