@@ -3,8 +3,9 @@ import { useState } from 'react'
 import { useAppStore, type Gender, type ActivityLevel, type WeightGoal } from '../store'
 import { exportToCSV } from '../utils/export'
 import { importFromCSV } from '../utils/import'
-import { Download, Upload, Trash2, Target, Moon, Sun, Laptop, Info } from 'lucide-react'
+import { Download, Upload, Trash2, Target, Moon, Sun, Laptop, Info, Image as ImageIcon } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
+import { parseSummaryImage } from '../utils/imageParser'
 
 export default function Settings() {
   const settings = useAppStore((state) => state.settings)
@@ -16,6 +17,59 @@ const [showGoalForm, setShowGoalForm] = useState(false)
   const [tdeeSource, setTdeeSource] = useState<'formula' | 'real'>('formula')
   const [showInfoTooltip, setShowInfoTooltip] = useState(false)
   const [goalTimeline, setGoalTimeline] = useState<'current' | 'start'>('current')
+  const [parsingImage, setParsingImage] = useState(false)
+  const [parsedData, setParsedData] = useState<{ date: string; calories: number; carbs: number; protein: number; fat: number } | null>(null)
+  const [showParsedModal, setShowParsedModal] = useState(false)
+
+  const addMealEntry = useAppStore((state) => state.addMealEntry)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setParsingImage(true)
+    try {
+      const data = await parseSummaryImage(file)
+      if (data) {
+        setParsedData(data)
+        setShowParsedModal(true)
+      } else {
+        alert('Could not parse image data.')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Error parsing image')
+    } finally {
+      setParsingImage(false)
+    }
+  }
+
+  const handleConfirmParsedData = () => {
+    if (!parsedData) return
+    const entry = {
+      id: crypto.randomUUID(),
+      foodItem: {
+        id: crypto.randomUUID(),
+        name: 'Parsed Image Summary',
+        brand: 'Image',
+        calories: parsedData.calories,
+        protein: parsedData.protein,
+        carbs: parsedData.carbs,
+        fat: parsedData.fat,
+      },
+      amount: 100, // represent as 100g chunk
+      calories: parsedData.calories,
+      protein: parsedData.protein,
+      carbs: parsedData.carbs,
+      fat: parsedData.fat,
+      timestamp: Date.now(),
+    }
+
+    addMealEntry(parsedData.date, 'breakfast', entry)
+    setShowParsedModal(false)
+    setParsedData(null)
+  }
+
   const [goalForm, setGoalForm] = useState<WeightGoal>(
     settings.weightGoal || {
       targetWeight: settings.weight || '',
@@ -581,6 +635,13 @@ const handleCalculateFromGoal = () => {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Export your daily logs and weight history to a CSV file, import from an existing CSV, or reset all local data.
         </p>
+
+        <label className="flex items-center justify-center w-full gap-2 py-3 px-4 bg-purple-50 text-purple-700 font-medium rounded-xl hover:bg-purple-100 transition-colors border border-purple-200 cursor-pointer mb-4">
+          <ImageIcon size={20} />
+          {parsingImage ? 'Parsing...' : 'Parse from Image'}
+          <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={parsingImage} />
+        </label>
+
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={exportToCSV}
@@ -605,6 +666,43 @@ const handleCalculateFromGoal = () => {
           Reset All Data
         </button>
       </div>
+
+      {showParsedModal && parsedData && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full space-y-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Parsed Data</h3>
+
+            {useAppStore.getState().dailyLogs[parsedData.date] && (
+              <div className="p-3 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-200">
+                Warning: Data already exists for {parsedData.date}.
+              </div>
+            )}
+
+            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              <p><strong>Date:</strong> {parsedData.date}</p>
+              <p><strong>Calories:</strong> {parsedData.calories} kcal</p>
+              <p><strong>Carbs:</strong> {parsedData.carbs} g</p>
+              <p><strong>Protein:</strong> {parsedData.protein} g</p>
+              <p><strong>Fat:</strong> {parsedData.fat} g</p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={() => setShowParsedModal(false)}
+                className="flex-1 py-2 px-4 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmParsedData}
+                className="flex-1 py-2 px-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700"
+              >
+                Add as Breakfast
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

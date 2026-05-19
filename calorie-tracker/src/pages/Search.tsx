@@ -6,9 +6,33 @@ import { useAppStore, type FoodItem, type MealType } from '../store'
 import Scanner from '../components/Scanner'
 import MealEntryForm from '../components/MealEntry'
 
-type Tab = 'search' | 'recent' | 'frequent'
+type Tab = 'search' | 'recent' | 'frequent' | 'custom'
 
 export default function Search() {
+  const [customFood, setCustomFood] = useState({
+    name: '',
+    calories: '',
+    protein: '',
+    carbs: '',
+    fat: '',
+  })
+
+  const handleCustomFoodSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!customFood.name || !customFood.calories) return
+
+    const newFood: FoodItem = {
+      id: crypto.randomUUID(),
+      name: customFood.name,
+      brand: 'Custom',
+      calories: Number(customFood.calories),
+      protein: Number(customFood.protein || 0),
+      carbs: Number(customFood.carbs || 0),
+      fat: Number(customFood.fat || 0),
+    }
+
+    setSelectedFood(newFood)
+  }
   const [searchParams] = useSearchParams()
   const defaultMeal = (searchParams.get('meal') as MealType) || 'snack'
   const defaultDate = searchParams.get('date') || undefined
@@ -122,6 +146,12 @@ export default function Search() {
           >
             Frequent
           </button>
+          <button
+            className={`pb-2 text-sm font-medium ${activeTab === 'custom' ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 dark:text-gray-400'}`}
+            onClick={() => setActiveTab('custom')}
+          >
+            Custom
+          </button>
         </div>
       </div>
 
@@ -162,6 +192,67 @@ export default function Search() {
               <p className="text-center text-gray-500 dark:text-gray-400 py-8">No history yet.</p>
             )}
           </div>
+        )}
+
+        {activeTab === 'custom' && (
+          <form onSubmit={handleCustomFoodSubmit} className="space-y-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Food Name</label>
+              <input
+                type="text"
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                value={customFood.name}
+                onChange={(e) => setCustomFood({ ...customFood, name: e.target.value })}
+                placeholder="e.g. Homemade Sandwich"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Calories (per 100g or 1 serving)</label>
+              <input
+                type="number"
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                value={customFood.calories}
+                onChange={(e) => setCustomFood({ ...customFood, calories: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Protein (g)</label>
+                <input
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  value={customFood.protein}
+                  onChange={(e) => setCustomFood({ ...customFood, protein: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Carbs (g)</label>
+                <input
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  value={customFood.carbs}
+                  onChange={(e) => setCustomFood({ ...customFood, carbs: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Fat (g)</label>
+                <input
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-2 border focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  value={customFood.fat}
+                  onChange={(e) => setCustomFood({ ...customFood, fat: e.target.value })}
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition-colors"
+            >
+              Add Custom Food
+            </button>
+          </form>
         )}
       </div>
     </div>
