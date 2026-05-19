@@ -11,6 +11,7 @@ type Tab = 'search' | 'recent' | 'frequent'
 export default function Search() {
   const [searchParams] = useSearchParams()
   const defaultMeal = (searchParams.get('meal') as MealType) || 'snack'
+  const defaultDate = searchParams.get('date') || undefined
 
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<FoodItem[]>([])
@@ -72,6 +73,7 @@ export default function Search() {
         <MealEntryForm
           foodItem={selectedFood}
           defaultMealType={defaultMeal}
+          defaultDate={defaultDate}
           onSuccess={() => setSelectedFood(null)}
         />
       </div>
