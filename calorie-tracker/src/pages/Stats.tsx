@@ -24,14 +24,14 @@ export default function Stats() {
  const chartData = useMemo(() => {
  const data = []
  const today = new Date()
+    const sortedLogDates = Object.keys(dailyLogs).sort()
 
  let daysToCalculate = 30
  if (typeof timeRange === 'number') {
  daysToCalculate = timeRange
  } else if (timeRange === 'all') {
- const allDates = Object.keys(dailyLogs).sort()
- if (allDates.length > 0) {
- daysToCalculate = differenceInDays(today, new Date(allDates[0])) + 1
+      if (sortedLogDates.length > 0) {
+        daysToCalculate = differenceInDays(today, new Date(sortedLogDates[0])) + 1
  }
  } else if (timeRange === 'goal' && settings.weightGoal) {
  daysToCalculate = differenceInDays(today, new Date(settings.weightGoal.startDate)) + 1
@@ -70,8 +70,8 @@ export default function Stats() {
  // First, try to find a weight BEFORE the range to use as a starting point
  let initialWeight: number | null = null
  if (data.length > 0) {
- const sortedDates = Object.keys(dailyLogs).sort().reverse()
- for (const d of sortedDates) {
+      for (let i = sortedLogDates.length - 1; i >= 0; i--) {
+        const d = sortedLogDates[i]
  if (d < data[0].fullDate && dailyLogs[d].weight) {
  initialWeight = dailyLogs[d].weight
  break
