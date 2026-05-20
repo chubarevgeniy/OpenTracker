@@ -54,6 +54,8 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  <Link
  to={`/search?meal=${mealType}&date=${today}`}
  className="p-2 bg-text text-surface rounded-2xl hover:opacity-80 transition-opacity shadow-sm"
+ aria-label={`Add ${title}`}
+ title={`Add ${title}`}
  >
  <Plus size={20} strokeWidth={2.5} />
  </Link>
@@ -82,12 +84,16 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  <button
  onClick={() => handleSaveEdit(entry.id)}
  className="p-1.5 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-full hover:bg-green-200 dark:hover:bg-green-900/60"
+ aria-label="Save changes"
+ title="Save changes"
  >
  <Check size={16} />
  </button>
  <button
  onClick={handleCancelEdit}
  className="p-1.5 bg-surface-hover text-text-muted text-text-muted rounded-full hover:bg-border"
+ aria-label="Cancel editing"
+ title="Cancel editing"
  >
  <X size={16} />
  </button>
@@ -106,12 +112,16 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  <button
  onClick={() => handleEditClick(entry)}
  className="text-blue-400 hover:text-blue-600 text-blue-500 hover:text-blue-400"
+ aria-label={`Edit ${entry.foodItem.name}`}
+ title={`Edit ${entry.foodItem.name}`}
  >
  <Pencil size={16} />
  </button>
  <button
  onClick={() => removeMealEntry(today, mealType, entry.id)}
  className="text-red-400 hover:text-red-600"
+ aria-label={`Delete ${entry.foodItem.name}`}
+ title={`Delete ${entry.foodItem.name}`}
  >
  <Trash2 size={16} />
  </button>
@@ -211,7 +221,7 @@ export default function Dashboard() {
  <div className="p-4 space-y-6 bg-bg min-h-[100%] pb-8">
  <header className="flex justify-center pt-2">
  <div className="inline-flex items-center gap-3 bg-surface rounded-full shadow-sm px-4 py-2">
- <button onClick={goToPreviousDay} className="p-1 hover:bg-surface-hover rounded-full text-text-muted transition-colors">
+ <button onClick={goToPreviousDay} className="p-1 hover:bg-surface-hover rounded-full text-text-muted transition-colors" aria-label="Previous day" title="Previous day">
  <ChevronLeft size={18} strokeWidth={2.5} />
  </button>
  <div className="relative flex items-center justify-center">
@@ -229,7 +239,7 @@ export default function Dashboard() {
  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
  />
  </div>
- <button onClick={goToNextDay} className="p-1 hover:bg-surface-hover rounded-full text-text-muted transition-colors">
+ <button onClick={goToNextDay} className="p-1 hover:bg-surface-hover rounded-full text-text-muted transition-colors" aria-label="Next day" title="Next day">
  <ChevronRight size={18} strokeWidth={2.5} />
  </button>
  </div>
