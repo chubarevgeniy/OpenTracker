@@ -7,6 +7,18 @@ import { calculateTDEE } from '../utils/calculations'
 
 type TimeRange = 7 | 30 | 90 | 180 | 365 | 'all' | 'goal'
 
+interface AggregatedData {
+  date: string
+  fullDate: string
+  totalCalories: number
+  calCount: number
+  weightSum: number
+  weightCount: number
+  goalWeight: number | "" | null
+  tdeeSum: number
+  tdeeCount: number
+}
+
 export default function Stats() {
  const dailyLogs = useAppStore((state) => state.dailyLogs)
  const settings = useAppStore((state) => state.settings)
@@ -99,8 +111,7 @@ export default function Stats() {
  // Aggregation logic
  if (averaging === 'weekly' || (averaging === 'auto' && daysToCalculate > 60 && daysToCalculate <= 180)) {
  // Weekly average
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const weeklyData: Record<string, any> = {}
+      const weeklyData: Record<string, AggregatedData> = {}
  data.forEach(point => {
  const weekStart = format(startOfWeek(point.dateObj), 'yyyy-MM-dd')
  if (!weeklyData[weekStart]) {
@@ -129,8 +140,7 @@ export default function Stats() {
           weeklyData[weekStart].tdeeCount += 1
         }
  })
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return Object.values(weeklyData).map((w: any) => ({
+      return Object.values(weeklyData).map(w => ({
  date: w.date,
  fullDate: w.fullDate,
  calories: w.calCount > 0 ? Math.round(w.totalCalories / w.calCount) : null,
@@ -140,8 +150,7 @@ export default function Stats() {
  }))
  } else if (averaging === 'monthly' || (averaging === 'auto' && daysToCalculate > 180)) {
  // Monthly average
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const monthlyData: Record<string, any> = {}
+      const monthlyData: Record<string, AggregatedData> = {}
  data.forEach(point => {
  const monthStart = format(startOfMonth(point.dateObj), 'yyyy-MM')
  if (!monthlyData[monthStart]) {
@@ -170,8 +179,7 @@ export default function Stats() {
           monthlyData[monthStart].tdeeCount += 1
         }
  })
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return Object.values(monthlyData).map((m: any) => ({
+      return Object.values(monthlyData).map(m => ({
  date: m.date,
  fullDate: m.fullDate,
  calories: m.calCount > 0 ? Math.round(m.totalCalories / m.calCount) : null,
