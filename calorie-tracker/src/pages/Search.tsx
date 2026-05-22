@@ -111,6 +111,7 @@ export default function Search() {
  <div className="relative flex-1">
  <input
  type="text"
+ aria-label="Search food"
  placeholder="Search food..."
  value={query}
  onChange={(e) => setQuery(e.target.value)}
@@ -121,9 +122,11 @@ export default function Search() {
  <button
  type="button"
  onClick={() => setShowScanner(!showScanner)}
- className="px-4 py-3 bg-text text-surface rounded-2xl shadow-sm hover:opacity-80 transition-opacity"
+ aria-label={showScanner ? "Close barcode scanner" : "Open barcode scanner"}
+ title={showScanner ? "Close barcode scanner" : "Open barcode scanner"}
+ className="px-4 py-3 bg-text text-surface rounded-2xl shadow-sm hover:opacity-80 transition-opacity flex items-center justify-center"
  >
- <Camera size={24} strokeWidth={2.5} />
+ {showScanner ? <X size={24} strokeWidth={2.5} /> : <Camera size={24} strokeWidth={2.5} />}
  </button>
  </form>
 

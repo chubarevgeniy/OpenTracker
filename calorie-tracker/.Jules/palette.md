@@ -1,0 +1,3 @@
+## 2025-02-18 - Search Input and Scanner Toggle Accessibility
+**Learning:** Icon-only buttons acting as toggles (like the scanner button) need dynamic `aria-label`s to inform screen readers of the current state and action ("Open barcode scanner" vs "Close barcode scanner"). Providing a visual state change (swapping the camera icon for an X) alongside the accessible label drastically improves the UX for all users.
+**Action:** When adding or modifying toggle buttons, especially those using icons, ensure both the visual icon and the `aria-label` update to reflect the new state. Use existing SVG icons (like `X` and `Camera` from `lucide-react`) to maintain consistency.
