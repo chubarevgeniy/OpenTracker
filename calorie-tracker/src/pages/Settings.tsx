@@ -488,6 +488,8 @@ const handleCalculateFromGoal = () => {
  onClick={() => setShowInfoTooltip(!showInfoTooltip)}
  onBlur={() => setShowInfoTooltip(false)}
  className="p-1 rounded-full hover:bg-surface focus:outline-none"
+ aria-label="Information about target calculation"
+ title="Information about target calculation"
  >
  <Info size={16} className="text-text-muted cursor-pointer"/>
  </button>
