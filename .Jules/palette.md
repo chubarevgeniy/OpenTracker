@@ -1,1 +1,5 @@
 ## 2026-05-20 - [Added ARIA Labels to Dashboard Buttons]\n**Learning:** Added 'aria-label' and 'title' attributes to icon-only buttons like Plus, Check, X, Pencil, Trash2, and Chevron directions on the Dashboard page to provide context to screen readers and tooltips to sighted users. Dynamic text like `Delete ${entry.foodItem.name}` was used to be more descriptive than a generic 'Delete' label.\n**Action:** Always verify icon-only buttons have descriptive accessible text in interactive components.
+
+## 2026-05-24 - [Improved Accessibility and Visual Feedback in Search Form]
+**Learning:** Added `pointer-events-none` to absolute-positioned input icons to prevent them from blocking clicks to the underlying input, and dynamically updated toggle buttons (like the barcode scanner) to switch their icon and `aria-label` based on state, providing clearer visual state feedback and tooltips.
+**Action:** Always verify that absolute-positioned decorative elements don't interfere with interaction and that toggle buttons explicitly describe their current state.

@@ -112,18 +112,21 @@ export default function Search() {
  <input
  type="text"
  placeholder="Search food..."
+ aria-label="Search food"
  value={query}
  onChange={(e) => setQuery(e.target.value)}
  className="w-full pl-12 pr-4 py-3 bg-surface text-text font-medium border-transparent shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-2xl focus:border-primary focus:ring-0"
  />
- <SearchIcon className="absolute left-4 top-3.5 text-text-muted"size={20} strokeWidth={2.5} />
+ <SearchIcon className="absolute left-4 top-3.5 text-text-muted pointer-events-none"size={20} strokeWidth={2.5} />
  </div>
  <button
  type="button"
  onClick={() => setShowScanner(!showScanner)}
  className="px-4 py-3 bg-text text-surface rounded-2xl shadow-sm hover:opacity-80 transition-opacity"
+ aria-label={showScanner ? "Close scanner" : "Open barcode scanner"}
+ title={showScanner ? "Close scanner" : "Open barcode scanner"}
  >
- <Camera size={24} strokeWidth={2.5} />
+ {showScanner ? <X size={24} strokeWidth={2.5} /> : <Camera size={24} strokeWidth={2.5} />}
  </button>
  </form>
 
