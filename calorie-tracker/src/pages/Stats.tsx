@@ -14,6 +14,8 @@ interface AggregatedData {
   calCount: number
   weightSum: number
   weightCount: number
+  weightMin: number
+  weightMax: number
   goalWeight: number | "" | null
   tdeeSum: number
   tdeeCount: number
@@ -122,6 +124,8 @@ export default function Stats() {
  calCount: 0,
  weightSum: 0,
  weightCount: 0,
+            weightMin: Infinity,
+            weightMax: -Infinity,
             goalWeight: point.goalWeight,
             tdeeSum: 0,
             tdeeCount: 0,
@@ -134,6 +138,12 @@ export default function Stats() {
  if (point.weight !== null) {
  weeklyData[weekStart].weightSum += point.weight
  weeklyData[weekStart].weightCount += 1
+          if (point.weight < weeklyData[weekStart].weightMin) {
+            weeklyData[weekStart].weightMin = point.weight
+          }
+          if (point.weight > weeklyData[weekStart].weightMax) {
+            weeklyData[weekStart].weightMax = point.weight
+          }
  }
         if (point.tdee !== null) {
           weeklyData[weekStart].tdeeSum += point.tdee
@@ -145,6 +155,8 @@ export default function Stats() {
  fullDate: w.fullDate,
  calories: w.calCount > 0 ? Math.round(w.totalCalories / w.calCount) : null,
  weight: w.weightCount > 0 ? Number((w.weightSum / w.weightCount).toFixed(1)) : null,
+        weightMin: w.weightCount > 0 ? w.weightMin : null,
+        weightMax: w.weightCount > 0 ? w.weightMax : null,
         goalWeight: w.goalWeight,
         tdee: w.tdeeCount > 0 ? Math.round(w.tdeeSum / w.tdeeCount) : null,
  }))
@@ -161,6 +173,8 @@ export default function Stats() {
  calCount: 0,
  weightSum: 0,
  weightCount: 0,
+            weightMin: Infinity,
+            weightMax: -Infinity,
             goalWeight: point.goalWeight,
             tdeeSum: 0,
             tdeeCount: 0,
@@ -173,6 +187,12 @@ export default function Stats() {
  if (point.weight !== null) {
  monthlyData[monthStart].weightSum += point.weight
  monthlyData[monthStart].weightCount += 1
+          if (point.weight < monthlyData[monthStart].weightMin) {
+            monthlyData[monthStart].weightMin = point.weight
+          }
+          if (point.weight > monthlyData[monthStart].weightMax) {
+            monthlyData[monthStart].weightMax = point.weight
+          }
  }
         if (point.tdee !== null) {
           monthlyData[monthStart].tdeeSum += point.tdee
@@ -184,6 +204,8 @@ export default function Stats() {
  fullDate: m.fullDate,
  calories: m.calCount > 0 ? Math.round(m.totalCalories / m.calCount) : null,
  weight: m.weightCount > 0 ? Number((m.weightSum / m.weightCount).toFixed(1)) : null,
+        weightMin: m.weightCount > 0 ? m.weightMin : null,
+        weightMax: m.weightCount > 0 ? m.weightMax : null,
         goalWeight: m.goalWeight,
         tdee: m.tdeeCount > 0 ? Math.round(m.tdeeSum / m.tdeeCount) : null,
  }))
@@ -275,6 +297,12 @@ export default function Stats() {
  <YAxis domain={['auto', 'auto']} fontSize={10} axisLine={false} tickLine={false} fontWeight="bold" />
  <Tooltip contentStyle={{ backgroundColor: 'var(--theme-surface)', color: 'var(--theme-text)', border: 'none', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontWeight: 'bold' }} />
  <Line type="monotone"dataKey="weight"stroke="#3b82f6"strokeWidth={4} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 7 }} name="Weight (kg)"/>
+              {(averaging === 'weekly' || averaging === 'monthly' || (averaging === 'auto' && chartData.length > 0 && 'weightMin' in chartData[0])) && (
+                <>
+                  <Line type="monotone" dataKey="weightMin" stroke="#60a5fa" strokeWidth={2} strokeDasharray="3 3" dot={false} name="Min Weight" />
+                  <Line type="monotone" dataKey="weightMax" stroke="#60a5fa" strokeWidth={2} strokeDasharray="3 3" dot={false} name="Max Weight" />
+                </>
+              )}
  {settings.weightGoal && (
  <Line type="monotone"dataKey="goalWeight"stroke="#10b981"strokeWidth={3} strokeDasharray="5 5"dot={false} name="Goal (kg)"/>
  )}
