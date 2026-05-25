@@ -197,22 +197,18 @@ export default function Dashboard() {
  }
  }
 
- const calculateTotals = () => {
- let calories = 0, protein = 0, carbs = 0, fat = 0
-
- Object.values(log.meals).forEach(mealArray => {
- mealArray.forEach(entry => {
- calories += entry.calories
- protein += entry.protein
- carbs += entry.carbs
- fat += entry.fat
- })
- })
-
- return { calories, protein, carbs, fat }
- }
-
- const totals = calculateTotals()
+ const totals = useMemo(() => {
+    let calories = 0, protein = 0, carbs = 0, fat = 0
+    Object.values(log.meals).forEach(mealArray => {
+      mealArray.forEach(entry => {
+        calories += entry.calories
+        protein += entry.protein
+        carbs += entry.carbs
+        fat += entry.fat
+      })
+    })
+    return { calories, protein, carbs, fat }
+  }, [log.meals])
 
  const goToPreviousDay = () => handleDateChange(subDays(selectedDateObj, 1))
  const goToNextDay = () => handleDateChange(addDays(selectedDateObj, 1))
