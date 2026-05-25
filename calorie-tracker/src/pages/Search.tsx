@@ -122,6 +122,8 @@ export default function Search() {
  type="button"
  onClick={() => setShowScanner(!showScanner)}
  className="px-4 py-3 bg-text text-surface rounded-2xl shadow-sm hover:opacity-80 transition-opacity"
+          aria-label={showScanner ? "Close barcode scanner" : "Open barcode scanner"}
+          title={showScanner ? "Close barcode scanner" : "Open barcode scanner"}
  >
  <Camera size={24} strokeWidth={2.5} />
  </button>
