@@ -218,6 +218,46 @@ export default function Stats() {
  return calculateTDEE(dailyLogs, tdeeRange)
  }, [dailyLogs, tdeeRange])
 
+  const tomorrowPrediction = useMemo(() => {
+    const todayStr = format(new Date(), 'yyyy-MM-dd')
+    const todayLog = dailyLogs[todayStr]
+
+    let todayCalories = 0
+    if (todayLog) {
+      Object.values(todayLog.meals).forEach(mealArray => {
+        mealArray.forEach(entry => {
+          todayCalories += entry.calories
+        })
+      })
+    }
+
+    // Find latest weight
+    let latestWeight = settings.weight
+    if (todayLog?.weight) {
+      latestWeight = todayLog.weight
+    } else {
+      const sortedDates = Object.keys(dailyLogs).sort().reverse()
+      for (const date of sortedDates) {
+        if (date < todayStr && dailyLogs[date].weight) {
+          latestWeight = dailyLogs[date].weight
+          break
+        }
+      }
+    }
+
+    if (!latestWeight || typeof latestWeight !== 'number' || !tdeeCalc) return null
+
+    const predictedWeightChange = (todayCalories - tdeeCalc.tdee) / 7700
+    const predictedWeight = latestWeight + predictedWeightChange
+
+    return {
+      todayCalories: Math.round(todayCalories),
+      latestWeight: latestWeight,
+      predictedWeightChange: Number(predictedWeightChange.toFixed(3)),
+      predictedWeight: Number(predictedWeight.toFixed(2))
+    }
+  }, [dailyLogs, tdeeCalc, settings.weight])
+
  return (
  <div className="p-4 space-y-6 bg-bg min-h-screen pb-24">
  <header className="flex flex-col gap-5 pt-2">
@@ -373,6 +413,39 @@ export default function Stats() {
  </div>
  )}
  </div>
+
+ {/* Tomorrow's Weight Prediction Card */}
+ {tomorrowPrediction && tdeeCalc && (
+   <div className="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-5 rounded-2xl shadow-md">
+     <div className="mb-4">
+       <h2 className="text-lg font-semibold mb-1">Tomorrow's Weight Prediction</h2>
+       <p className="text-emerald-100 text-sm">Based on today's intake & your TDEE</p>
+     </div>
+
+     <div className="space-y-4">
+       <div className="flex items-end justify-between">
+         <div>
+           <p className="text-3xl font-bold">{tomorrowPrediction.predictedWeight}</p>
+           <p className="text-emerald-200 text-sm">kg expected tomorrow</p>
+         </div>
+       </div>
+
+       <div className="grid grid-cols-2 gap-4 text-sm bg-surface/10 p-3 rounded-xl backdrop-blur-sm">
+         <div>
+           <p className="text-emerald-200">Today's Intake</p>
+           <p className="font-medium">{tomorrowPrediction.todayCalories} kcal</p>
+         </div>
+         <div>
+           <p className="text-emerald-200">Expected Change</p>
+           <p className="font-medium">
+             {tomorrowPrediction.predictedWeightChange > 0 ? '+' : ''}
+             {tomorrowPrediction.predictedWeightChange} kg
+           </p>
+         </div>
+       </div>
+     </div>
+   </div>
+ )}
  </div>
  )
 }
