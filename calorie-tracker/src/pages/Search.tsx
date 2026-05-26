@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Search as SearchIcon, Camera, X } from 'lucide-react'
 import { searchProducts, getProductByBarcode } from '../services/api'
@@ -68,15 +68,21 @@ export default function Search() {
  setLoading(false)
  }
 
- const recentItems = Object.values(searchHistory)
- .sort((a, b) => b.lastSearched - a.lastSearched)
- .map((item) => item.foodItem)
- .slice(0, 20)
+ // ⚡ Bolt: Memoized search history sorts to prevent expensive O(N log N)
+ // array sorting on every keystroke when typing in the search input
+ const recentItems = useMemo(() => {
+   return Object.values(searchHistory)
+     .sort((a, b) => b.lastSearched - a.lastSearched)
+     .map((item) => item.foodItem)
+     .slice(0, 20)
+ }, [searchHistory])
 
- const frequentItems = Object.values(searchHistory)
- .sort((a, b) => b.count - a.count)
- .map((item) => item.foodItem)
- .slice(0, 20)
+ const frequentItems = useMemo(() => {
+   return Object.values(searchHistory)
+     .sort((a, b) => b.count - a.count)
+     .map((item) => item.foodItem)
+     .slice(0, 20)
+ }, [searchHistory])
 
  // Use an effect to focus search input if not showing scanner or entry
  useEffect(() => {
