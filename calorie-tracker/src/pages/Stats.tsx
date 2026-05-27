@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
-import { format, subDays, differenceInDays, startOfWeek, startOfMonth } from 'date-fns'
+import { format, subDays, differenceInDays, startOfWeek, startOfMonth, addDays } from 'date-fns'
 import { useAppStore } from '../store'
+import type { DailyLog } from '../store'
 import { calculateTDEE } from '../utils/calculations'
 
 
@@ -219,17 +220,20 @@ export default function Stats() {
  }, [dailyLogs, tdeeRange])
 
   const tomorrowPrediction = useMemo(() => {
-    const todayStr = format(new Date(), 'yyyy-MM-dd')
+    const today = new Date()
+    const todayStr = format(today, 'yyyy-MM-dd')
     const todayLog = dailyLogs[todayStr]
 
-    let todayCalories = 0
-    if (todayLog) {
-      Object.values(todayLog.meals).forEach(mealArray => {
-        mealArray.forEach(entry => {
-          todayCalories += entry.calories
-        })
-      })
+    // Helper to get total calories for a log
+    const getCalories = (log: DailyLog | undefined) => {
+      if (!log) return 0
+      let c = 0
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      Object.values(log.meals).forEach((m: any[]) => m.forEach((e: any) => c += e.calories))
+      return c
     }
+
+    const todayCalories = getCalories(todayLog)
 
     // Find latest weight
     let latestWeight = settings.weight
@@ -247,16 +251,74 @@ export default function Stats() {
 
     if (!latestWeight || typeof latestWeight !== 'number' || !tdeeCalc) return null
 
-    const predictedWeightChange = (todayCalories - tdeeCalc.tdee) / 7700
+    // Calculate smart coefficient 'k' based on historical data
+    let sumXY = 0
+    let sumXX = 0
+
+    const goalStartDate = settings.weightGoal?.startDate || format(subDays(today, 30), 'yyyy-MM-dd')
+    let currentDate = new Date(goalStartDate)
+    if (currentDate > today) currentDate = subDays(today, 30)
+
+    const datesToCheck = []
+    while(format(currentDate, 'yyyy-MM-dd') < todayStr) {
+      datesToCheck.push(format(currentDate, 'yyyy-MM-dd'))
+      currentDate = addDays(currentDate, 1)
+    }
+
+    datesToCheck.forEach(dateD => {
+      const dateD_plus_1 = format(addDays(new Date(dateD), 1), 'yyyy-MM-dd')
+      const dateD_minus_1 = format(subDays(new Date(dateD), 1), 'yyyy-MM-dd')
+
+      const logD = dailyLogs[dateD]
+      const logD_plus_1 = dailyLogs[dateD_plus_1]
+      const logD_minus_1 = dailyLogs[dateD_minus_1]
+
+      if (logD?.weight && logD_plus_1?.weight && logD_minus_1) {
+        const calD = getCalories(logD)
+        const calD_minus_1 = getCalories(logD_minus_1)
+
+        if (calD > 500 && calD_minus_1 > 500) {
+          const weightDelta = logD_plus_1.weight - logD.weight
+          const fatLoss = (calD - tdeeCalc.tdee) / 7700
+          const foodDelta = weightDelta - fatLoss
+          const calDelta = calD - calD_minus_1
+
+          sumXY += calDelta * foodDelta
+          sumXX += calDelta * calDelta
+        }
+      }
+    })
+
+    // Default k: 1000 kcal diff = ~200g weight change (glycogen + food volume)
+    let k = 0.0002
+    if (sumXX > 50000) {
+      k = Math.max(0, Math.min(0.001, sumXY / sumXX))
+    }
+
+    let predictedWeightChange = (todayCalories - tdeeCalc.tdee) / 7700
+    let isSmart = false
+
+    const yesterdayStr = format(subDays(today, 1), 'yyyy-MM-dd')
+    const yesterdayLog = dailyLogs[yesterdayStr]
+    const yesterdayCalories = getCalories(yesterdayLog)
+
+    if (yesterdayCalories > 500) {
+      const calDelta = todayCalories - yesterdayCalories
+      const foodWeightDelta = k * calDelta
+      predictedWeightChange += foodWeightDelta
+      isSmart = true
+    }
+
     const predictedWeight = latestWeight + predictedWeightChange
 
     return {
       todayCalories: Math.round(todayCalories),
       latestWeight: latestWeight,
       predictedWeightChange: Number(predictedWeightChange.toFixed(3)),
-      predictedWeight: Number(predictedWeight.toFixed(2))
+      predictedWeight: Number(predictedWeight.toFixed(2)),
+      isSmart
     }
-  }, [dailyLogs, tdeeCalc, settings.weight])
+  }, [dailyLogs, tdeeCalc, settings.weight, settings.weightGoal])
 
  return (
  <div className="p-4 space-y-6 bg-bg min-h-screen pb-24">
@@ -418,7 +480,14 @@ export default function Stats() {
  {tomorrowPrediction && tdeeCalc && (
    <div className="bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-5 rounded-2xl shadow-md">
      <div className="mb-4">
-       <h2 className="text-lg font-semibold mb-1">Tomorrow's Weight Prediction</h2>
+       <div className="flex justify-between items-start">
+         <h2 className="text-lg font-semibold mb-1">Tomorrow's Weight Prediction</h2>
+         {tomorrowPrediction.isSmart && (
+           <span className="bg-emerald-800/50 text-emerald-100 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30 font-medium tracking-wide uppercase" title="Accounts for food volume/glycogen trends based on your history">
+             Smart
+           </span>
+         )}
+       </div>
        <p className="text-emerald-100 text-sm">Based on today's intake & your TDEE</p>
      </div>
 
