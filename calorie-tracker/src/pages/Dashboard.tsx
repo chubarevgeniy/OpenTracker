@@ -163,18 +163,18 @@ export default function Dashboard() {
  // Find latest weight
  let latestWeight = settings.weight;
 
-  const sortedDates = useMemo(() => {
-    return Object.keys(dailyLogs).sort().reverse()
-  }, [dailyLogs])
-
  if (log.weight) {
  latestWeight = log.weight;
  } else {
- // Find the most recent weight before selectedDate
- for (const date of sortedDates) {
- if (date < selectedDate && dailyLogs[date].weight) {
+    // ⚡ Bolt: Use O(n) linear search to find the most recent weight
+    // instead of an expensive O(n log n) Object.keys(dailyLogs).sort().reverse()
+    // which previously ran frequently when typing in meal inputs.
+    let mostRecentDate = '';
+    const dates = Object.keys(dailyLogs);
+    for (const date of dates) {
+      if (date < selectedDate && date > mostRecentDate && dailyLogs[date].weight) {
+        mostRecentDate = date;
  latestWeight = dailyLogs[date].weight;
- break;
  }
  }
  }
