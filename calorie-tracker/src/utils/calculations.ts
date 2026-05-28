@@ -1,4 +1,4 @@
-import { differenceInDays, format, subDays } from 'date-fns'
+import { differenceInDays, format } from 'date-fns'
 import type { DailyLog } from '../store'
 
 export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: number | 'all', endDate: Date = new Date()) {
@@ -11,12 +11,21 @@ export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: nu
       logsInPeriod.push(dailyLogs[k])
     }
   } else {
+    // ⚡ Bolt: Optimize historical loop with native Date logic
+    // Avoids expensive O(N) format() and subDays() on every chart render
+    const d = new Date(endDate)
+    d.setDate(d.getDate() - tdeeRange)
     for (let i = tdeeRange; i >= 0; i--) {
-      const dateStr = format(subDays(endDate, i), 'yyyy-MM-dd')
+      const yyyy = d.getFullYear()
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+      const dateStr = `${yyyy}-${mm}-${dd}`
+
       const log = dailyLogs[dateStr]
       if (log) {
         logsInPeriod.push(log)
       }
+      d.setDate(d.getDate() + 1)
     }
   }
 
@@ -27,9 +36,19 @@ export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: nu
 
  logsInPeriod.forEach(log => {
  let dailyCals = 0
- Object.values(log.meals).forEach(mealArray => {
- mealArray.forEach(entry => dailyCals += entry.calories)
- })
+ // ⚡ Bolt: Optimize inner loop without Object.values to prevent array creation overhead
+ const m = log.meals
+ if (m) {
+   for (const mealKey in m) {
+     const mealArray = m[mealKey as keyof typeof m];
+     if (mealArray) {
+       for (let j = 0; j < mealArray.length; j++) {
+         dailyCals += mealArray[j].calories;
+       }
+     }
+   }
+ }
+
  if (dailyCals > 500) { // arbitrary threshold to count as a"logged"day
  totalCalories += dailyCals
  daysWithFood++
