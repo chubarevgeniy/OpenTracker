@@ -6,3 +6,7 @@
 ## 2024-05-28 - Native JS Dates in High-Frequency Chart Render Loops
 **Learning:** In React components that render large historical charts (like `Stats.tsx`), calling functions like `date-fns`'s `format()` and `subDays()` inside nested loops (e.g., historical TDEE tracking `calculateTDEE` which recalculates on every chart data point for up to 365 days) can cause massive CPU bottlenecks and block the main thread.
 **Action:** When generating time-series data backwards iteratively over hundreds of data points, use native `new Date(endDate)` and manual `.setDate(d.getDate() - 1)` alongside manual string padding (`String(d.getMonth()+1).padStart(2,'0')`) instead of library functions. Additionally, avoid `Object.values().forEach` mapping over nested structures, preferring manual direct loop access (e.g. `m.breakfast.length`). This reduced iteration time from ~85ms down to ~6ms in benchmarking.
+
+## 2024-05-29 - O(N) Linear Scans Over O(N log N) Object Mapping for Date Extrema
+**Learning:** Using `Object.keys(map).sort()` inside hot rendering paths (like chart data generation or dashboard mounts) to find the most recent or earliest dates creates unnecessary array allocation and O(N log N) processing overhead, causing noticeable frame drops as the `dailyLogs` map grows over time.
+**Action:** Always prefer direct O(N) linear scans with a `for...in` loop to identify extrema (min/max dates) in dictionary structures in this codebase, avoiding intermediate array creation and sorting entirely.

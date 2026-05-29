@@ -163,20 +163,21 @@ export default function Dashboard() {
  // Find latest weight
  let latestWeight = settings.weight;
 
- const memoizedLatestWeight = useMemo(() => {
- if (log.weight) return log.weight;
- let mostRecentDate = "";
- let w = settings.weight;
- for (const date in dailyLogs) {
- if (date < selectedDate && dailyLogs[date].weight && date > mostRecentDate) {
- mostRecentDate = date;
- w = dailyLogs[date].weight;
- }
- }
- return w;
- }, [log.weight, dailyLogs, selectedDate, settings.weight]);
+  const sortedDates = useMemo(() => {
+    return Object.keys(dailyLogs).sort().reverse()
+  }, [dailyLogs])
 
- latestWeight = memoizedLatestWeight;
+ if (log.weight) {
+ latestWeight = log.weight;
+ } else {
+ // Find the most recent weight before selectedDate
+ for (const date of sortedDates) {
+ if (date < selectedDate && dailyLogs[date].weight) {
+ latestWeight = dailyLogs[date].weight;
+ break;
+ }
+ }
+ }
 
  const [weightInput, setWeightInput] = useState(latestWeight.toString())
 
