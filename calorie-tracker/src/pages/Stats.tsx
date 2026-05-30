@@ -55,31 +55,52 @@ export default function Stats() {
  }
 
  // Fill data for the last N days to ensure continuity
+ // ⚡ Bolt: Use native Date API and manual string padding to avoid expensive format() and subDays() in hot loop
+ const loopDate = new Date(today)
+ loopDate.setDate(loopDate.getDate() - (daysToCalculate - 1))
+
+ const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
  for (let i = daysToCalculate - 1; i >= 0; i--) {
- const date = subDays(today, i)
- const dateStr = format(date, 'yyyy-MM-dd')
+ const yyyy = loopDate.getFullYear()
+ const mm = String(loopDate.getMonth() + 1).padStart(2, '0')
+ const dd = String(loopDate.getDate()).padStart(2, '0')
+ const dateStr = `${yyyy}-${mm}-${dd}`
+
+ const shortMonth = monthNames[loopDate.getMonth()]
+ const shortDateStr = `${shortMonth} ${dd}`
+
+ // We need a clean Date object for Recharts tooltip and calculation utilities
+ const dateObj = new Date(loopDate)
+
  const log = dailyLogs[dateStr]
 
  let calories = 0
  if (log) {
- Object.values(log.meals).forEach(mealArray => {
- mealArray.forEach(entry => {
- calories += entry.calories
- })
- })
+ // ⚡ Bolt: Use for...in to prevent Object.values() from allocating arrays on each iteration
+ for (const mealKey in log.meals) {
+ const mealArray = log.meals[mealKey as keyof typeof log.meals]
+ if (mealArray) {
+ for (let j = 0; j < mealArray.length; j++) {
+ calories += mealArray[j].calories
+ }
+ }
+ }
  }
 
-      const historicalTdeeCalc = calculateTDEE(dailyLogs, 14, date)
+      const historicalTdeeCalc = calculateTDEE(dailyLogs, 14, dateObj)
 
  data.push({
- dateObj: date,
- date: format(date, 'MMM dd'),
+ dateObj: dateObj,
+ date: shortDateStr,
  fullDate: dateStr,
  calories: excludeZeroes && calories === 0 ? null : Math.round(calories),
  weight: log?.weight || null,
  goalWeight: settings.weightGoal ? settings.weightGoal.targetWeight : null,
         tdee: historicalTdeeCalc ? historicalTdeeCalc.tdee : null,
  })
+
+ loopDate.setDate(loopDate.getDate() + 1)
  }
 
  // Interpolate missing weights for better visualization
