@@ -61,8 +61,22 @@ export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: nu
  const avgDailyIntake = totalCalories / daysWithFood
 
  // Find weight delta
- const firstWeightLog = logsInPeriod.find(l => l.weight)
- const lastWeightLog = [...logsInPeriod].reverse().find(l => l.weight)
+ // ⚡ Bolt: Replace O(N) array copy + reverse with O(N) linear scans from ends
+ let firstWeightLog
+ for (let i = 0; i < logsInPeriod.length; i++) {
+   if (logsInPeriod[i].weight) {
+     firstWeightLog = logsInPeriod[i]
+     break
+   }
+ }
+
+ let lastWeightLog
+ for (let i = logsInPeriod.length - 1; i >= 0; i--) {
+   if (logsInPeriod[i].weight) {
+     lastWeightLog = logsInPeriod[i]
+     break
+   }
+ }
 
  if (!firstWeightLog || !lastWeightLog || firstWeightLog.date === lastWeightLog.date) return null
 
