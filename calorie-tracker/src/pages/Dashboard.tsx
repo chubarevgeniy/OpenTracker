@@ -198,15 +198,19 @@ export default function Dashboard() {
 
  const totals = useMemo(() => {
     let calories = 0, protein = 0, carbs = 0, fat = 0
-    Object.values(log.meals).forEach(mealArray => {
-      mealArray.forEach(entry => {
+    // ⚡ Bolt: Replace Object.values() with for...in to prevent array allocation overhead
+    for (const mealKey in log.meals) {
+      const mealArray = log.meals[mealKey as keyof typeof log.meals];
+      for (let i = 0; i < mealArray.length; i++) {
+        const entry = mealArray[i];
         calories += entry.calories
         protein += entry.protein
         carbs += entry.carbs
         fat += entry.fat
-      })
-    })
+      }
+    }
     return { calories, protein, carbs, fat }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [log.meals])
 
  const goToPreviousDay = () => handleDateChange(subDays(selectedDateObj, 1))
