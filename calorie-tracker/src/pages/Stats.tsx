@@ -257,8 +257,13 @@ export default function Stats() {
     const getCalories = (log: DailyLog | undefined) => {
       if (!log) return 0
       let c = 0
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Object.values(log.meals).forEach((m: any[]) => m.forEach((e: any) => c += e.calories))
+      // ⚡ Bolt: Use for...in instead of Object.values().forEach() to prevent array allocations
+      for (const mealKey in log.meals) {
+        const mealArray = log.meals[mealKey as keyof typeof log.meals]
+        for (let i = 0; i < mealArray.length; i++) {
+          c += mealArray[i].calories
+        }
+      }
       return c
     }
 
