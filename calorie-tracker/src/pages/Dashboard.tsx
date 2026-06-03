@@ -24,8 +24,13 @@ const ProgressBar = ({ label, current, target, colorClass }: { label: string, cu
 
 const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
  const mealCalories = meals.reduce((sum, item) => sum + item.calories, 0)
+ const mealProtein = meals.reduce((sum, item) => sum + item.protein, 0)
+ const mealCarbs = meals.reduce((sum, item) => sum + item.carbs, 0)
+ const mealFat = meals.reduce((sum, item) => sum + item.fat, 0)
  const [editingId, setEditingId] = useState<string | null>(null)
  const [editAmount, setEditAmount] = useState<string>('')
+ const [isExpanded, setIsExpanded] = useState(false)
+ const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null)
 
  const handleEditClick = (entry: MealEntry) => {
  setEditingId(entry.id)
@@ -47,8 +52,15 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  return (
  <div className="bg-surface p-5 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-transparent mb-4">
  <div className="flex justify-between items-center mb-4">
- <div>
+ <div
+   className="cursor-pointer select-none"
+   onClick={() => setIsExpanded(!isExpanded)}
+   title={`Toggle ${title} macros`}
+ >
+ <div className="flex items-center gap-2">
  <h3 className="font-bold text-xl text-text capitalize">{title}</h3>
+ <span className="text-text-muted text-xs bg-bg rounded-full px-2 py-0.5">{meals.length} items</span>
+ </div>
  <span className="text-sm text-text-muted font-medium">{Math.round(mealCalories)} kcal</span>
  </div>
  <Link
@@ -61,10 +73,19 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  </Link>
  </div>
 
+ {isExpanded && meals.length > 0 && (
+ <div className="flex gap-4 mb-4 text-xs font-semibold text-text-muted">
+ <span>Protein: {Math.round(mealProtein)}g</span>
+ <span>Carbs: {Math.round(mealCarbs)}g</span>
+ <span>Fat: {Math.round(mealFat)}g</span>
+ </div>
+ )}
+
  {meals.length > 0 ? (
  <div className="space-y-3">
  {meals.map((entry) => (
- <div key={entry.id} className="flex justify-between items-center text-sm border-t border-border pt-2">
+ <div key={entry.id} className="flex flex-col text-sm border-t border-border pt-2">
+ <div className="flex justify-between items-center">
  {editingId === entry.id ? (
  <div className="flex-1 flex items-center justify-between gap-2">
  <div className="flex-1">
@@ -101,7 +122,10 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  </div>
  ) : (
  <>
- <div className="flex-1">
+ <div
+   className="flex-1 cursor-pointer select-none"
+   onClick={() => setExpandedEntryId(expandedEntryId === entry.id ? null : entry.id)}
+ >
  <p className="font-medium text-text">{entry.foodItem.name}</p>
  <p className="text-text-muted text-xs">
  {entry.amount}g • {entry.foodItem.brand || 'Generic'}
@@ -127,6 +151,14 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  </button>
  </div>
  </>
+ )}
+ </div>
+ {expandedEntryId === entry.id && editingId !== entry.id && (
+ <div className="flex gap-4 mt-2 text-xs font-medium text-text-muted bg-bg rounded-xl p-2 px-3">
+ <span>P: {Math.round(entry.protein)}g</span>
+ <span>C: {Math.round(entry.carbs)}g</span>
+ <span>F: {Math.round(entry.fat)}g</span>
+ </div>
  )}
  </div>
  ))}
