@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, memo } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
 import { format, addDays, subDays, isToday } from 'date-fns'
 import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X } from 'lucide-react'
@@ -22,7 +22,8 @@ const ProgressBar = ({ label, current, target, colorClass }: { label: string, cu
  )
 }
 
-const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
+// ⚡ Bolt: Memoize MealSection to prevent all meal sections from re-rendering on every keystroke when typing in the weight input
+const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
  const mealCalories = meals.reduce((sum, item) => sum + item.calories, 0)
  const [editingId, setEditingId] = useState<string | null>(null)
  const [editAmount, setEditAmount] = useState<string>('')
@@ -136,7 +137,10 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  )}
  </div>
  )
-}
+})
+
+// ⚡ Bolt: Extract default empty meals object to maintain referential equality when no log exists, allowing memo to work
+const DEFAULT_MEALS = { breakfast: [], lunch: [], dinner: [], snack: [] }
 
 export default function Dashboard() {
  const [searchParams, setSearchParams] = useSearchParams()
@@ -157,7 +161,7 @@ export default function Dashboard() {
 
  const log = dailyLogs[selectedDate] || {
  date: selectedDate,
- meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
+ meals: DEFAULT_MEALS,
  }
 
  // Find latest weight
