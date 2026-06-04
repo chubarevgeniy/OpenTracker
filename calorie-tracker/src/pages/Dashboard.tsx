@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, memo } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
 import { format, addDays, subDays, isToday } from 'date-fns'
 import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 
-const ProgressBar = ({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
+const ProgressBar = memo(({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
  const percentage = Math.min(100, Math.round((current / (target || 1)) * 100))
  return (
  <div className="w-full">
@@ -20,9 +20,9 @@ const ProgressBar = ({ label, current, target, colorClass }: { label: string, cu
  </div>
  </div>
  )
-}
+})
 
-const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
+const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
  const mealCalories = meals.reduce((sum, item) => sum + item.calories, 0)
  const mealProtein = meals.reduce((sum, item) => sum + item.protein, 0)
  const mealCarbs = meals.reduce((sum, item) => sum + item.carbs, 0)
@@ -168,7 +168,10 @@ const MealSection = ({ title, mealType, meals, today, removeMealEntry, updateMea
  )}
  </div>
  )
-}
+})
+
+// ⚡ Bolt: Define default meals outside component to preserve referential equality for React.memo
+const DEFAULT_MEALS = { breakfast: [], lunch: [], dinner: [], snack: [] }
 
 export default function Dashboard() {
  const [searchParams, setSearchParams] = useSearchParams()
@@ -189,7 +192,7 @@ export default function Dashboard() {
 
  const log = dailyLogs[selectedDate] || {
  date: selectedDate,
- meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
+    meals: DEFAULT_MEALS,
  }
 
  // Find latest weight
