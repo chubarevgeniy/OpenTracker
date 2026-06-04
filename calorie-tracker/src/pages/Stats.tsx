@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
-import { format, subDays, differenceInDays, startOfWeek, startOfMonth, addDays } from 'date-fns'
+import { format, differenceInDays, startOfWeek, startOfMonth } from 'date-fns'
 import { useAppStore } from '../store'
 import type { DailyLog } from '../store'
 import { calculateTDEE } from '../utils/calculations'
@@ -292,19 +292,35 @@ export default function Stats() {
     let sumXY = 0
     let sumXX = 0
 
-    const goalStartDate = settings.weightGoal?.startDate || format(subDays(today, 30), 'yyyy-MM-dd')
-    let currentDate = new Date(goalStartDate)
-    if (currentDate > today) currentDate = subDays(today, 30)
+    // ⚡ Bolt: Optimize prediction loop with native Date logic and sliding window
+    // Avoids expensive format(), addDays() and subDays() on every render
+    const thirtyDaysAgo = new Date(today)
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const datesToCheck = []
-    while(format(currentDate, 'yyyy-MM-dd') < todayStr) {
-      datesToCheck.push(format(currentDate, 'yyyy-MM-dd'))
-      currentDate = addDays(currentDate, 1)
+    const formatNative = (d: Date) => {
+      const yyyy = d.getFullYear()
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+      return `${yyyy}-${mm}-${dd}`
     }
 
-    datesToCheck.forEach(dateD => {
-      const dateD_plus_1 = format(addDays(new Date(dateD), 1), 'yyyy-MM-dd')
-      const dateD_minus_1 = format(subDays(new Date(dateD), 1), 'yyyy-MM-dd')
+    const goalStartDate = settings.weightGoal?.startDate || formatNative(thirtyDaysAgo)
+    let currentDate = new Date(goalStartDate)
+    if (currentDate > today) currentDate = new Date(thirtyDaysAgo)
+
+    const loopDate = new Date(currentDate)
+    loopDate.setDate(loopDate.getDate() - 1) // Start from one day before
+
+    let prevStr = formatNative(loopDate)
+    loopDate.setDate(loopDate.getDate() + 1)
+    let currStr = formatNative(loopDate)
+    loopDate.setDate(loopDate.getDate() + 1)
+    let nextStr = formatNative(loopDate)
+
+    while (currStr < todayStr) {
+      const dateD = currStr
+      const dateD_plus_1 = nextStr
+      const dateD_minus_1 = prevStr
 
       const logD = dailyLogs[dateD]
       const logD_plus_1 = dailyLogs[dateD_plus_1]
@@ -324,7 +340,13 @@ export default function Stats() {
           sumXX += calDelta * calDelta
         }
       }
-    })
+
+      // shift window
+      prevStr = currStr
+      currStr = nextStr
+      loopDate.setDate(loopDate.getDate() + 1)
+      nextStr = formatNative(loopDate)
+    }
 
     // Default k: 1000 kcal diff = ~200g weight change (glycogen + food volume)
     let k = 0.0002
@@ -335,7 +357,9 @@ export default function Stats() {
     let predictedWeightChange = (todayCalories - tdeeCalc.tdee) / 7700
     let isSmart = false
 
-    const yesterdayStr = format(subDays(today, 1), 'yyyy-MM-dd')
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const yesterdayStr = formatNative(yesterday)
     const yesterdayLog = dailyLogs[yesterdayStr]
     const yesterdayCalories = getCalories(yesterdayLog)
 
