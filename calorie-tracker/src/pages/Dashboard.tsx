@@ -23,10 +23,17 @@ const ProgressBar = memo(({ label, current, target, colorClass }: { label: strin
 })
 
 const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, updateMealEntry }: { title: string, mealType: MealType, meals: MealEntry[], today: string, removeMealEntry: (date: string, mealType: MealType, entryId: string) => void, updateMealEntry: (date: string, mealType: MealType, entryId: string, amount: number) => void }) => {
- const mealCalories = meals.reduce((sum, item) => sum + item.calories, 0)
- const mealProtein = meals.reduce((sum, item) => sum + item.protein, 0)
- const mealCarbs = meals.reduce((sum, item) => sum + item.carbs, 0)
- const mealFat = meals.reduce((sum, item) => sum + item.fat, 0)
+ // ⚡ Bolt: Merge multiple reduce passes into a single O(N) loop and memoize to prevent recalculations on local UI state updates
+ const { mealCalories, mealProtein, mealCarbs, mealFat } = useMemo(() => {
+   let cals = 0, pro = 0, car = 0, fat = 0;
+   for (let i = 0; i < meals.length; i++) {
+     cals += meals[i].calories;
+     pro += meals[i].protein;
+     car += meals[i].carbs;
+     fat += meals[i].fat;
+   }
+   return { mealCalories: cals, mealProtein: pro, mealCarbs: car, mealFat: fat };
+ }, [meals]);
  const [editingId, setEditingId] = useState<string | null>(null)
  const [editAmount, setEditAmount] = useState<string>('')
  const [isExpanded, setIsExpanded] = useState(false)
