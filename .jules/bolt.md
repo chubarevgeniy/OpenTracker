@@ -1,3 +1,6 @@
 ## 2025-06-08 - Date-Fns in High Frequency Tight Loops
 **Learning:** `date-fns` functions (like `format`, `subDays`, `addDays`), while convenient, create significant garbage collection overhead and cpu bottlenecks when called inside tight `for` or `while` loops that iterate over hundreds of historical items, particularly in the `tomorrowPrediction` hook.
 **Action:** Replace `date-fns` calls with native `Date.setDate(Date.getDate() + 1)` arithmetic and manual string padding (e.g. `String(d.getMonth() + 1).padStart(2, '0')`) when iterating over large datasets or constructing data for Recharts to avoid micro-allocations.
+## 2025-06-09 - Multiple array reductions on the same local state
+**Learning:** React components sometimes chain multiple `.reduce()` operations over an array (e.g. `meals.reduce(sum + item.calories)`, `meals.reduce(sum + item.protein)`, etc) which incurs unnecessary array iteration overhead and, more importantly, triggers expensive calculations when any unrelated local state in the component (like an input field's keystrokes) causes a re-render.
+**Action:** Merge multiple `reduce` passes into a single `for` loop and wrap the calculation in a `useMemo` block with the array as a dependency so it only recalculates when the underlying array actually changes.
