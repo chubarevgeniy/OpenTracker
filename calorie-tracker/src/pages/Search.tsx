@@ -73,15 +73,15 @@ export default function Search() {
  const recentItems = useMemo(() => {
    return Object.values(searchHistory)
      .sort((a, b) => b.lastSearched - a.lastSearched)
-     .map((item) => item.foodItem)
      .slice(0, 20)
+     .map((item) => item.foodItem)
  }, [searchHistory])
 
  const frequentItems = useMemo(() => {
    return Object.values(searchHistory)
      .sort((a, b) => b.count - a.count)
-     .map((item) => item.foodItem)
      .slice(0, 20)
+     .map((item) => item.foodItem)
  }, [searchHistory])
 
  // Use an effect to focus search input if not showing scanner or entry
