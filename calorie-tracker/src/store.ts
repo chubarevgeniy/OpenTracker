@@ -85,6 +85,17 @@ export interface SearchHistoryItem {
  foodItem: FoodItem
  lastSearched: number
  count: number
+ amounts: number[] // history of entered amounts (grams), used to suggest a median default
+}
+
+// Median of a list of numbers; returns undefined for an empty list.
+export function median(nums: number[]): number | undefined {
+ if (!nums.length) return undefined
+ const sorted = [...nums].sort((a, b) => a - b)
+ const mid = Math.floor(sorted.length / 2)
+ return sorted.length % 2 !== 0
+ ? sorted[mid]
+ : (sorted[mid - 1] + sorted[mid]) / 2
 }
 
 interface AppState {
@@ -96,8 +107,9 @@ interface AppState {
  addMealEntry: (date: string, mealType: MealType, entry: MealEntry) => void
  updateMealEntry: (date: string, mealType: MealType, entryId: string, newAmount: number) => void
  removeMealEntry: (date: string, mealType: MealType, entryId: string) => void
+ copyEntries: (toDate: string, toMealType: MealType, entries: MealEntry[]) => void
  logWeight: (date: string, weight: number) => void
- addSearchHistory: (foodItem: FoodItem) => void
+ addSearchHistory: (foodItem: FoodItem, amount?: number) => void
  importData: (logs: Record<string, DailyLog>) => void
  resetData: () => void
 }
@@ -201,6 +213,32 @@ export const useAppStore = create<AppState>()(
  }
  }),
 
+ copyEntries: (toDate, toMealType, entries) =>
+ set((state) => {
+ const log = state.dailyLogs[toDate] || {
+ date: toDate,
+ meals: { breakfast: [], lunch: [], dinner: [], snack: [] },
+ }
+ // Clone each entry with a fresh id/timestamp so the source stays intact.
+ const cloned: MealEntry[] = entries.map((entry) => ({
+ ...entry,
+ id: crypto.randomUUID(),
+ timestamp: Date.now(),
+ }))
+ return {
+ dailyLogs: {
+ ...state.dailyLogs,
+ [toDate]: {
+ ...log,
+ meals: {
+ ...log.meals,
+ [toMealType]: [...log.meals[toMealType], ...cloned],
+ },
+ },
+ },
+ }
+ }),
+
  logWeight: (date, weight) =>
  set((state) => {
  const log = state.dailyLogs[date] || {
@@ -222,9 +260,13 @@ export const useAppStore = create<AppState>()(
  }
  }),
 
- addSearchHistory: (foodItem) =>
+ addSearchHistory: (foodItem, amount) =>
  set((state) => {
  const existing = state.searchHistory[foodItem.id]
+ const prevAmounts = existing?.amounts ?? []
+ // Keep the most recent 50 amounts so the median stays representative.
+ const amounts =
+ amount && amount > 0 ? [...prevAmounts, amount].slice(-50) : prevAmounts
  return {
  searchHistory: {
  ...state.searchHistory,
@@ -232,6 +274,7 @@ export const useAppStore = create<AppState>()(
  foodItem,
  lastSearched: Date.now(),
  count: existing ? existing.count + 1 : 1,
+ amounts,
  },
  },
  }
