@@ -7,12 +7,13 @@ interface MealEntryFormProps {
  foodItem: FoodItem
  defaultMealType: MealType
  defaultDate?: string
+ defaultAmount?: number
  onSuccess: () => void
 }
 
-export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, onSuccess }: MealEntryFormProps) {
+export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, defaultAmount, onSuccess }: MealEntryFormProps) {
  const navigate = useNavigate()
- const [amount, setAmount] = useState<number | ''>(100)
+ const [amount, setAmount] = useState<number | ''>(defaultAmount && defaultAmount > 0 ? defaultAmount : 100)
  const [mealType, setMealType] = useState<MealType>(defaultMealType)
 
  const addMealEntry = useAppStore((state) => state.addMealEntry)
@@ -36,7 +37,7 @@ export default function MealEntryForm({ foodItem, defaultMealType, defaultDate, 
  const today = defaultDate || format(new Date(), 'yyyy-MM-dd')
 
  addMealEntry(today, mealType, entry)
- addSearchHistory(foodItem)
+ addSearchHistory(foodItem, amount)
 
  onSuccess()
  navigate(`/?date=${today}`)

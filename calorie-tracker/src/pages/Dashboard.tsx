@@ -1,8 +1,58 @@
 import { useState, useEffect, useMemo, memo } from 'react'
 import { useAppStore, type MealType, type MealEntry } from '../store'
 import { format, addDays, subDays, isToday } from 'date-fns'
-import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X } from 'lucide-react'
+import { Plus, Trash2, ChevronLeft, ChevronRight, Scale, Pencil, Check, X, Copy } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
+
+const MEAL_OPTIONS: { value: MealType, label: string }[] = [
+ { value: 'breakfast', label: 'Breakfast' },
+ { value: 'lunch', label: 'Lunch' },
+ { value: 'dinner', label: 'Dinner' },
+ { value: 'snack', label: 'Snack' },
+]
+
+// Circular progress ring around the day's calorie count.
+const CalorieRing = memo(({ eaten, target }: { eaten: number, target: number }) => {
+ const radius = 56
+ const stroke = 9
+ const normalizedRadius = radius - stroke / 2
+ const circumference = 2 * Math.PI * normalizedRadius
+ const pct = target > 0 ? Math.min(1, eaten / target) : 0
+ const offset = circumference * (1 - pct)
+ const over = target > 0 && eaten > target
+ return (
+ <div className="relative flex items-center justify-center" style={{ width: radius * 2, height: radius * 2 }}>
+ <svg height={radius * 2} width={radius * 2} className="-rotate-90">
+ <circle
+ className="text-bg-alt"
+ stroke="currentColor"
+ fill="transparent"
+ strokeWidth={stroke}
+ r={normalizedRadius}
+ cx={radius}
+ cy={radius}
+ />
+ <circle
+ className={over ? 'text-red-400' : 'text-primary'}
+ stroke="currentColor"
+ fill="transparent"
+ strokeWidth={stroke}
+ strokeLinecap="round"
+ r={normalizedRadius}
+ cx={radius}
+ cy={radius}
+ style={{ strokeDasharray: circumference, strokeDashoffset: offset, transition: 'stroke-dashoffset 0.5s ease' }}
+ />
+ </svg>
+ <div className="absolute flex flex-col items-center leading-none">
+ <span className="text-3xl font-black">{Math.round(eaten)}</span>
+ <span className="text-text-muted text-[10px] font-bold uppercase tracking-wider mt-1">
+ / {target || 0}
+ </span>
+ </div>
+ </div>
+ )
+})
 
 const ProgressBar = memo(({ label, current, target, colorClass }: { label: string, current: number, target: number, colorClass: string }) => {
  const percentage = Math.min(100, Math.round((current / (target || 1)) * 100))
@@ -39,6 +89,36 @@ const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, upda
  const [isExpanded, setIsExpanded] = useState(false)
  const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null)
 
+ const copyEntries = useAppStore((state) => state.copyEntries)
+ const [showCopy, setShowCopy] = useState(false)
+ // Copy target defaults to the current (real) day; meal type defaults to same.
+ const [copyDate, setCopyDate] = useState(format(new Date(), 'yyyy-MM-dd'))
+ const [copyMealType, setCopyMealType] = useState<MealType>(mealType)
+ const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+ const openCopy = () => {
+ setCopyDate(format(new Date(), 'yyyy-MM-dd'))
+ setCopyMealType(mealType)
+ setSelectedIds(new Set(meals.map((m) => m.id)))
+ setShowCopy(true)
+ }
+
+ const toggleSelected = (id: string) => {
+ setSelectedIds((prev) => {
+ const next = new Set(prev)
+ if (next.has(id)) next.delete(id)
+ else next.add(id)
+ return next
+ })
+ }
+
+ const handleCopyConfirm = () => {
+ const toCopy = meals.filter((m) => selectedIds.has(m.id))
+ if (toCopy.length === 0) return
+ copyEntries(copyDate, copyMealType, toCopy)
+ setShowCopy(false)
+ }
+
  const handleEditClick = (entry: MealEntry) => {
  setEditingId(entry.id)
  setEditAmount(entry.amount.toString())
@@ -70,6 +150,17 @@ const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, upda
  </div>
  <span className="text-sm text-text-muted font-medium">{Math.round(mealCalories)} kcal</span>
  </div>
+ <div className="flex items-center gap-2">
+ {meals.length > 0 && (
+ <button
+ onClick={openCopy}
+ className="p-2 bg-bg text-text-muted rounded-2xl hover:text-text hover:bg-bg-alt transition-colors shadow-sm"
+ aria-label={`Copy ${title}`}
+ title={`Copy ${title} to another day`}
+ >
+ <Copy size={18} strokeWidth={2.5} />
+ </button>
+ )}
  <Link
  to={`/search?meal=${mealType}&date=${today}`}
  className="p-2 bg-text text-surface rounded-2xl hover:opacity-80 transition-opacity shadow-sm"
@@ -78,6 +169,7 @@ const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, upda
  >
  <Plus size={20} strokeWidth={2.5} />
  </Link>
+ </div>
  </div>
 
  {isExpanded && meals.length > 0 && (
@@ -172,6 +264,83 @@ const MealSection = memo(({ title, mealType, meals, today, removeMealEntry, upda
  </div>
  ) : (
  <p className="text-sm text-text-muted italic">No food logged yet.</p>
+ )}
+
+ {showCopy && (
+ <div
+ className="fixed inset-0 z-[100] bg-black/40 flex items-end sm:items-center justify-center p-4"
+ onClick={() => setShowCopy(false)}
+ >
+ <div
+ className="bg-surface w-full max-w-md rounded-3xl p-5 shadow-xl max-h-[85vh] overflow-y-auto"
+ onClick={(e) => e.stopPropagation()}
+ >
+ <div className="flex justify-between items-center mb-4">
+ <h3 className="font-bold text-lg text-text">Copy {title}</h3>
+ <button
+ onClick={() => setShowCopy(false)}
+ className="p-1.5 text-text-muted hover:text-text rounded-full"
+ aria-label="Close"
+ title="Close"
+ >
+ <X size={18} />
+ </button>
+ </div>
+
+ <div className="space-y-3 mb-4">
+ <div>
+ <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1">To day</label>
+ <input
+ type="date"
+ value={copyDate}
+ onChange={(e) => e.target.value && setCopyDate(e.target.value)}
+ className="w-full p-3 bg-bg border-2 border-transparent rounded-2xl focus:ring-0 focus:border-primary text-text font-bold"
+ />
+ </div>
+ <div>
+ <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1">To meal</label>
+ <select
+ value={copyMealType}
+ onChange={(e) => setCopyMealType(e.target.value as MealType)}
+ className="w-full p-3 bg-bg border-2 border-transparent rounded-2xl focus:ring-0 focus:border-primary text-text font-bold appearance-none"
+ >
+ {MEAL_OPTIONS.map((o) => (
+ <option key={o.value} value={o.value}>{o.label}</option>
+ ))}
+ </select>
+ </div>
+ </div>
+
+ <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Items</p>
+ <div className="space-y-2 mb-5">
+ {meals.map((entry) => (
+ <label
+ key={entry.id}
+ className="flex items-center gap-3 bg-bg rounded-2xl p-3 cursor-pointer"
+ >
+ <input
+ type="checkbox"
+ checked={selectedIds.has(entry.id)}
+ onChange={() => toggleSelected(entry.id)}
+ className="w-5 h-5 rounded accent-primary"
+ />
+ <div className="flex-1 min-w-0">
+ <p className="font-medium text-text text-sm truncate">{entry.foodItem.name}</p>
+ <p className="text-text-muted text-xs">{entry.amount}g • {Math.round(entry.calories)} kcal</p>
+ </div>
+ </label>
+ ))}
+ </div>
+
+ <button
+ onClick={handleCopyConfirm}
+ disabled={selectedIds.size === 0}
+ className="w-full py-4 bg-primary text-black font-bold rounded-2xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+ >
+ Copy {selectedIds.size > 0 ? `${selectedIds.size} item${selectedIds.size > 1 ? 's' : ''}` : ''}
+ </button>
+ </div>
+ </div>
  )}
  </div>
  )
@@ -315,25 +484,17 @@ export default function Dashboard() {
 
  {/* Summary Card */}
  <div className="bg-surface p-6 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
- <div className="flex items-start gap-6">
- <div className="flex-1 space-y-4">
+ <div className="flex items-center gap-6">
+ <div className="flex flex-col items-center gap-3">
+ <CalorieRing eaten={totals.calories} target={Number(settings.targetCalories) || 0} />
+ <div className="flex gap-5 text-center">
  <div>
- <h2 className="text-text font-bold text-lg">Calories</h2>
- <div className="flex items-baseline gap-1 mt-1">
- <span className="text-4xl font-black">{Math.round(totals.calories)}</span>
- <span className="text-text-muted font-medium text-sm">kcal</span>
- </div>
- <p className="text-text-muted text-xs font-semibold uppercase tracking-wider mt-1">Eaten</p>
- </div>
-
- <div className="flex gap-6">
- <div>
- <p className="text-lg font-bold">{settings.targetCalories || 0}</p>
+ <p className="text-sm font-bold">{settings.targetCalories || 0}</p>
  <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Target</p>
  </div>
  <div>
- <p className="text-lg font-bold">{Math.max(0, Math.round(Number(settings.targetCalories) - totals.calories))}</p>
-              <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Left</p>
+ <p className="text-sm font-bold">{Math.max(0, Math.round(Number(settings.targetCalories) - totals.calories))}</p>
+ <p className="text-text-muted text-[10px] font-bold uppercase tracking-wider">Left</p>
  </div>
  </div>
  </div>

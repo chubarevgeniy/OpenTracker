@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Search as SearchIcon, Camera, X } from 'lucide-react'
 import { searchProducts, getProductByBarcode } from '../services/api'
-import { useAppStore, type FoodItem, type MealType } from '../store'
+import { useAppStore, median, type FoodItem, type MealType } from '../store'
 import Scanner from '../components/Scanner'
 import MealEntryForm from '../components/MealEntry'
 
@@ -40,7 +40,8 @@ export default function Search() {
  const [query, setQuery] = useState('')
  const [results, setResults] = useState<FoodItem[]>([])
  const [loading, setLoading] = useState(false)
- const [activeTab, setActiveTab] = useState<Tab>('search')
+ // Open on "Frequent" by default so commonly used foods are one tap away.
+ const [activeTab, setActiveTab] = useState<Tab>('frequent')
  const [showScanner, setShowScanner] = useState(false)
  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null)
 
@@ -50,6 +51,8 @@ export default function Search() {
  if (e) e.preventDefault()
  if (!query.trim()) return
 
+ // The button (or Enter) runs the online search and reveals its results tab.
+ setActiveTab('search')
  setLoading(true)
  const items = await searchProducts(query)
  setResults(items)
@@ -89,7 +92,29 @@ export default function Search() {
  // optional auto focus
  }, [])
 
- const displayList = activeTab === 'search' ? results : activeTab === 'recent' ? recentItems : frequentItems
+ // Live-filter the local history as the user types; the online search only
+ // runs when the search button (or Enter) is pressed.
+ const filteredRecent = useMemo(() => {
+ const q = query.trim().toLowerCase()
+ if (!q) return recentItems
+ return recentItems.filter(
+ (item) =>
+ item.name.toLowerCase().includes(q) ||
+ (item.brand?.toLowerCase().includes(q) ?? false)
+ )
+ }, [recentItems, query])
+
+ const filteredFrequent = useMemo(() => {
+ const q = query.trim().toLowerCase()
+ if (!q) return frequentItems
+ return frequentItems.filter(
+ (item) =>
+ item.name.toLowerCase().includes(q) ||
+ (item.brand?.toLowerCase().includes(q) ?? false)
+ )
+ }, [frequentItems, query])
+
+ const displayList = activeTab === 'search' ? results : activeTab === 'recent' ? filteredRecent : filteredFrequent
 
  if (selectedFood) {
  return (
@@ -104,6 +129,7 @@ export default function Search() {
  foodItem={selectedFood}
  defaultMealType={defaultMeal}
  defaultDate={defaultDate}
+ defaultAmount={median(searchHistory[selectedFood.id]?.amounts ?? [])}
  onSuccess={() => setSelectedFood(null)}
  />
  </div>
@@ -170,7 +196,7 @@ export default function Search() {
  </div>
  )}
 
- {loading ? (
+ {activeTab !== 'custom' && (loading ? (
  <div className="text-center py-8 text-text-muted font-medium">Searching...</div>
  ) : (
  <div className="space-y-3">
@@ -197,10 +223,10 @@ export default function Search() {
  <p className="text-center text-text-muted py-8">No results found for"{query}"</p>
  )}
  {displayList.length === 0 && activeTab !== 'search' && (
- <p className="text-center text-text-muted py-8">No history yet.</p>
+ <p className="text-center text-text-muted py-8">{query.trim() ? `No matches for "${query}"` : 'No history yet.'}</p>
  )}
  </div>
- )}
+ ))}
 
  {activeTab === 'custom' && (
  <form onSubmit={handleCustomFoodSubmit} className="space-y-4 bg-surface p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] mt-2">
