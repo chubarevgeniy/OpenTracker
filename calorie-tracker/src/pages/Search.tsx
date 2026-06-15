@@ -74,17 +74,19 @@ export default function Search() {
  // ⚡ Bolt: Memoized search history sorts to prevent expensive O(N log N)
  // array sorting on every keystroke when typing in the search input
  const recentItems = useMemo(() => {
+   // ⚡ Bolt: Apply .slice() before .map() to avoid array allocation and mapping overhead for discarded elements
    return Object.values(searchHistory)
      .sort((a, b) => b.lastSearched - a.lastSearched)
-     .map((item) => item.foodItem)
      .slice(0, 20)
+     .map((item) => item.foodItem)
  }, [searchHistory])
 
  const frequentItems = useMemo(() => {
+   // ⚡ Bolt: Apply .slice() before .map() to avoid array allocation and mapping overhead for discarded elements
    return Object.values(searchHistory)
      .sort((a, b) => b.count - a.count)
-     .map((item) => item.foodItem)
      .slice(0, 20)
+     .map((item) => item.foodItem)
  }, [searchHistory])
 
  // Use an effect to focus search input if not showing scanner or entry
