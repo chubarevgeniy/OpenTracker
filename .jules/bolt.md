@@ -8,3 +8,6 @@
 ## 2025-06-11 - Optimize Stats.tsx aggregation by removing date-fns
 **Learning:** `date-fns` formatting (`format()`) and manipulation functions (like `startOfWeek`, `startOfMonth`) have extremely high overhead when invoked repeatedly within tight loop boundaries or iterations such as when iterating historical daily logs (hundreds of items) for weekly/monthly statistics aggregation.
 **Action:** Always favor native JavaScript `Date` API methods (`getFullYear`, `getMonth`, `getDate`, combined with manual string padding `padStart`) when generating loop-dependent date strings or bin keys to avoid rendering bottlenecks on large historical data arrays.
+## 2025-06-16 - Array Transformation Slicing Order
+**Learning:** When transforming large arrays to extract a subset of elements (e.g., top N recent search items), applying `.map(...)` before `.slice(0, N)` incurs unnecessary performance overhead by executing the map callback and allocating memory for elements that are immediately discarded.
+**Action:** Always apply `.slice(0, N)` *before* `.map(...)` when only a subset of transformed elements is needed.
