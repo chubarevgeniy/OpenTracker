@@ -6,10 +6,15 @@ export function calculateTDEE(dailyLogs: Record<string, DailyLog>, tdeeRange: nu
 
   if (tdeeRange === 'all') {
     const endDateStr = format(endDate, 'yyyy-MM-dd')
-    const keys = Object.keys(dailyLogs).filter(k => k <= endDateStr).sort()
-    for (const k of keys) {
-      logsInPeriod.push(dailyLogs[k])
+    // ⚡ Bolt: Replace Object.keys().filter().sort() with for...in loop
+    // to avoid intermediate array allocations and reduce CPU overhead
+    for (const k in dailyLogs) {
+      if (k <= endDateStr) {
+        logsInPeriod.push(dailyLogs[k])
+      }
     }
+    // Sort in place to maintain chronological order
+    logsInPeriod.sort((a, b) => a.date < b.date ? -1 : (a.date > b.date ? 1 : 0))
   } else {
     // ⚡ Bolt: Optimize historical loop with native Date logic
     // Avoids expensive O(N) format() and subDays() on every chart render
